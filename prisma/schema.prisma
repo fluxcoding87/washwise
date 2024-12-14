@@ -1,19 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
 
-// prisma/schema.prisma
 datasource db {
   provider  = "postgresql"
   url  	    = env("DATABASE_URL")
-  // uncomment next line if you use Prisma <5.10
-  // directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model User{
@@ -24,28 +15,114 @@ model User{
   image String?
   hashedPassword String?
 
-  accounts Account[]
+  // accounts Account[] if Google or github login is required
+
+  staff Staff?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// If GOOGLE OR GITHUB LOGIN IS REQUIRED
+// model Account{
+//   id String @id @default(uuid())
+//   userId String
+//   type String
+//   provider String
+//   providerAccountId String
+//   refresh_token String? 
+//   access_token String? 
+//   expires_at Int?
+//   token_type String?
+//   scope String?
+//   id_token String? 
+//   session_state String?
+
+//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   @@unique([provider,providerAccountId])
+// }
+
+model Laundry{
+  laundry_no String @default(uuid())
+  date DateTime @default(now())
+  cloth_id String 
+  quantity Int
+  confirmed_time DateTime
+
+  clothes Clothes @relation(fields: [cloth_id],references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cloth_id])
+  @@id([laundry_no,date,cloth_id])
+}
+
+model Clothes{
+  id String @id @default(uuid())
+  items String[]
+  laundry Laundry?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Account{
-  id String @id @default(uuid())
-  userId String
-  type String
-  provider String
-  providerAccountId String
-  refresh_token String? 
-  access_token String? 
-  expires_at Int?
-  token_type String?
-  scope String?
-  id_token String? 
-  session_state String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+model HostelFloorRoom{
+  hostel_id String 
+  floor_id String
+  room_no String
 
-  @@unique([provider,providerAccountId])
+  hostel Hostel @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
+
+  @@id([hostel_id,floor_id,room_no])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
+model Staff{
+  id String @id @default(uuid())
+  userId String
+  hostelId String
+  name String
+  role String
+  group String?
+
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+  hostel Hostel @relation(fields: [hostelId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId])
+
+}
+model Organization{
+ id String @id @default(uuid())
+ name String
+ type String
+
+ hostel Hostel[]
+
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+}
+
+model Hostel{
+  id String @id @default(uuid())
+  name String
+  total_floors Int
+  total_rooms Int
+  gender_type String
+  warden String?
+
+  organizationId String
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  staff Staff[]
+  hostel_floor_room HostelFloorRoom[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
