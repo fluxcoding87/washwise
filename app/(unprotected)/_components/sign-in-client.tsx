@@ -16,10 +16,12 @@ import { Button } from "@/components/ui/button";
 import { loginFormSchema } from "@/types/auth";
 import { useLogin } from "@/hooks/auth/useLogin";
 import Link from "next/link";
+import db from "@/lib/db";
+import { useInsert } from "@/hooks/insert/useInsert";
 
 export const SignInClient = () => {
   const { mutate, isPending } = useLogin();
-
+  const { mutate: insert } = useInsert();
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -31,7 +33,6 @@ export const SignInClient = () => {
   const onSubmit = (values: z.infer<typeof loginFormSchema>) => {
     mutate(values);
   };
-
   return (
     <Card className="max-w-2xl mx-auto shadow-none border mt-8">
       <CardHeader className="flex items-center justify-center">

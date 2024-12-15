@@ -5,27 +5,30 @@ import axios from "axios";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
+import { Hostel } from "@prisma/client";
 
-export const useRegister = () => {
+export const useInsert = () => {
   const router = useRouter();
   const mutation = useMutation({
     mutationFn: async ({
       name,
-      email,
-      password,
-      mobile_number,
-      room_no,
-      hostel_id,
-      floor,
-    }: z.infer<typeof signUpFormSchema>) => {
-      const response = await axios.post("/api/register", {
+      total_floors,
+      total_rooms,
+      gender_type,
+      organizationId,
+    }: {
+      name: string;
+      total_floors: number;
+      total_rooms: number;
+      gender_type: string;
+      organizationId: string;
+    }) => {
+      const response = await axios.post("/api/insert", {
         name,
-        email,
-        password,
-        mobile_number,
-        room_no,
-        hostel_id,
-        floor,
+        total_floors,
+        total_rooms,
+        gender_type,
+        organizationId,
       });
       if (!response.data) {
         throw new Error("Something went wrong!");
@@ -33,8 +36,8 @@ export const useRegister = () => {
       return response.data;
     },
     onSuccess: () => {
-      toast.success("Signed Up Successfully!");
-      router.push("/sign-in");
+      toast.success("Insert Successfull!");
+      // router.push("/sign-in");
     },
     onError: () => {
       console.error("Failed");

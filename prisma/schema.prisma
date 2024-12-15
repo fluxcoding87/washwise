@@ -14,12 +14,15 @@ model User{
   emailVerified DateTime?
   image String?
   hashedPassword String?
-
-  // accounts Account[] if Google or github login is required
-
+  mobile_number String?
+  hostel_id String?
+  hostel Hostel? @relation(fields: [hostel_id],references: [id], onDelete: Cascade)
+  room_no String?
+  floor String?
   staff Staff?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  // accounts Account[] if Google or github login is required
 }
 
 // If GOOGLE OR GITHUB LOGIN IS REQUIRED
@@ -103,7 +106,7 @@ model Organization{
  name String
  type String
 
- hostel Hostel[]
+ hostels Hostel[]
 
  createdAt DateTime @default(now())
  updatedAt DateTime @updatedAt
@@ -121,6 +124,8 @@ model Hostel{
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   staff Staff[]
   hostel_floor_room HostelFloorRoom[]
+
+  users User[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -1,12 +1,22 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import db from "@/lib/db";
+import { z } from "zod";
+import { signUpFormSchema } from "@/types/auth";
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = await req.json();
+    const {
+      name,
+      email,
+      password,
+      mobile_number,
+      room_no,
+      hostel_id,
+      floor,
+    }: z.infer<typeof signUpFormSchema> = await req.json();
 
-    if (!name || !email || !password) {
-      return new NextResponse("Missing Fields", { status: 401 });
+    if (!name || !email || !password || !room_no || !hostel_id || !floor) {
+      return new NextResponse("Missing Fields", { status: 402 });
     }
     const hashedPassword = await bcrypt.hash(password, 12);
     const user = await db.user.create({
@@ -14,6 +24,10 @@ export async function POST(req: Request) {
         name,
         email,
         hashedPassword,
+        mobile_number,
+        room_no,
+        hostel_id,
+        floor,
       },
     });
     return NextResponse.json(user);
