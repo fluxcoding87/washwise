@@ -1,3 +1,4 @@
+import { Hostel, User } from "@prisma/client";
 import { z } from "zod";
 
 export const loginFormSchema = z.object({
@@ -14,3 +15,5 @@ export const signUpFormSchema = z.object({
   hostel_id: z.string().min(1, "Hostel is Required"),
   floor: z.string().min(1, "Floor is Required"),
 });
+
+export type FullUser = User & { hostel: Hostel };
