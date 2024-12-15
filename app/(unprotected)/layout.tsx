@@ -19,7 +19,7 @@ export default function LoginLayoutPage({ children }: LoginLayoutPageProps) {
         </Link>
         <nav className="flex items-center gap-x-4">
           <Button className="font-semibold bg-[#007DFC]" asChild>
-            <Link href={"/request"}> Request Access</Link>
+            <Link href={"/sign-up"}>Sign Up</Link>
           </Button>
         </nav>
       </header>

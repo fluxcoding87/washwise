@@ -26,7 +26,7 @@ export const useRegister = () => {
     },
     onSuccess: () => {
       toast.success("Signed Up Successfully!");
-      router.push("/");
+      router.push("/sign-in");
     },
     onError: () => {
       console.error("Failed");

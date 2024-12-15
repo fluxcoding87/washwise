@@ -42,4 +42,10 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async redirect({ url, baseUrl }) {
+      // Always redirect to "/" after sign-in with a 303 redirect
+      return baseUrl;
+    },
+  },
 };

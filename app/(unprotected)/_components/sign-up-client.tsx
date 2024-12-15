@@ -13,22 +13,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { loginFormSchema } from "@/types/auth";
-import { useLogin } from "@/hooks/auth/useLogin";
+import { signUpFormSchema } from "@/types/auth";
 import Link from "next/link";
+import { useRegister } from "@/hooks/auth/useRegister";
 
-export const HomePageClient = () => {
-  const { mutate, isPending } = useLogin();
+export const SignUpClient = () => {
+  const { mutate, isPending } = useRegister();
 
-  const form = useForm<z.infer<typeof loginFormSchema>>({
-    resolver: zodResolver(loginFormSchema),
+  const form = useForm<z.infer<typeof signUpFormSchema>>({
+    resolver: zodResolver(signUpFormSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof loginFormSchema>) => {
+  const onSubmit = (values: z.infer<typeof signUpFormSchema>) => {
     mutate(values);
   };
 
@@ -36,7 +37,7 @@ export const HomePageClient = () => {
     <Card className="max-w-2xl mx-auto shadow-none border mt-8">
       <CardHeader className="flex items-center justify-center">
         <CardTitle className="text-xl md:text-2xl text-neutral-700 font-bold">
-          Sign In to <span className="text-primary font-bold">Washwise</span>
+          Sign Up to <span className="text-primary font-bold">Washwise</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -45,6 +46,23 @@ export const HomePageClient = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex justify-center flex-col gap-y-4 mt-2 max-w-xl mx-auto"
           >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="Your full name"
+                      className="px-4"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="email"
@@ -79,16 +97,17 @@ export const HomePageClient = () => {
                 </FormItem>
               )}
             />
+
             <Button className="font-semibold text-base" disabled={isPending}>
-              Sign In
+              Sign Up
             </Button>
           </form>
         </Form>
       </CardContent>
-      <div className="w-full text-center my-4">
-        Don&apos;t have an account with us?{" "}
-        <Link href="/request" className="text-primary">
-          Request
+      <div className="w-full text-center my-3">
+        Already have an account?{" "}
+        <Link href="/sign-in" className="text-primary">
+          Sign In
         </Link>
       </div>
     </Card>

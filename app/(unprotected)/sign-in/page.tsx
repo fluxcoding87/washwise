@@ -1,11 +1,11 @@
 import { getCurrentUser } from "@/actions/getCurrentUser";
-import { HomePageClient } from "./_components/client";
+import { SignInClient } from "../_components/sign-in-client";
 import { redirect } from "next/navigation";
 
-export default async function Home() {
+export default async function SignInPage() {
   const user = await getCurrentUser();
   if (user) {
-    redirect("/home");
+    redirect("/");
   }
-  return <HomePageClient />;
+  return <SignInClient />;
 }
