@@ -50,7 +50,7 @@ model Laundry{
   date DateTime @default(now())
   cloth_id String 
   quantity Int
-  confirmed_time DateTime
+  confirmed_time DateTime?
 
   clothes Clothes @relation(fields: [cloth_id],references: [id])
 
@@ -61,14 +61,28 @@ model Laundry{
   @@id([laundry_no,date,cloth_id])
 }
 
-model Clothes{
-  id String @id @default(uuid())
-  items String[]
-  laundry Laundry?
+model Clothes {
+  id            String          @id @default(uuid())
+  clothingItems ClothingItem[]  @relation("ClothesToClothingItems")
+  laundry       Laundry?   
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 }
+
+model ClothingItem {
+  id              String     @id @default(uuid())
+  name            String
+  type            String?
+  min_weight_in_grams Int
+  max_weight_in_grams Int?
+
+  clothes         Clothes[]  @relation("ClothesToClothingItems") // Many-to-many relation
+
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
 
 
 model HostelFloorRoom{

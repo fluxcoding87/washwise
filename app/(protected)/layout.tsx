@@ -1,3 +1,4 @@
+import { MobileSidebar } from "@/components/mobile-sidebar";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@/components/user-button";
@@ -22,6 +23,7 @@ export default function ProtectedPageLayout({
         </Link>
         <nav className="flex items-center justify-center">
           <Navbar />
+          <MobileSidebar />
         </nav>
         <UserButton />
       </header>

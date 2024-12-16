@@ -7,6 +7,7 @@ interface DottedSeparatorProps {
   dotSize?: string;
   gapSize?: string;
   direction?: "horizontal" | "vertical";
+  style?: React.CSSProperties;
 }
 
 export const DottedSeparator = ({
@@ -20,6 +21,7 @@ export const DottedSeparator = ({
   const isHorizontal = direction === "horizontal";
   return (
     <div
+      style={{ WebkitUserSelect: "none", userSelect: "none" }}
       className={cn(
         isHorizontal
           ? "w-full flex items-center"

@@ -19,7 +19,7 @@ export const UserButton = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center size-10 rounded-full p-2 relative bg-[#1A237E] animate-pulse"></div>
+      <div className="hidden md:flex items-center justify-center size-10 rounded-full p-2 relative bg-[#3F51B5] animate-pulse"></div>
     );
   }
   if (!user) {
@@ -43,7 +43,7 @@ export const UserButton = () => {
   }
   return (
     <Popover>
-      <PopoverTrigger>
+      <PopoverTrigger className="hidden md:block">
         <div className="flex items-center justify-center size-10 rounded-full p-2 relative bg-[#3F51B5]">
           {user.image ? (
             <Image fill src={user.image} alt="user image" />

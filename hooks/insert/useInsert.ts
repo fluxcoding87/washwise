@@ -1,14 +1,8 @@
-import { signUpFormSchema } from "@/types/auth";
 import { useMutation } from "@tanstack/react-query";
-import { signIn } from "next-auth/react";
 import axios from "axios";
 import { toast } from "sonner";
-import { z } from "zod";
-import { useRouter } from "next/navigation";
-import { Hostel } from "@prisma/client";
 
 export const useInsert = () => {
-  const router = useRouter();
   const mutation = useMutation({
     mutationFn: async ({
       name,
@@ -36,7 +30,64 @@ export const useInsert = () => {
       return response.data;
     },
     onSuccess: () => {
-      toast.success("Insert Successfull!");
+      toast.success("Insert Hostel Successfull!");
+      // router.push("/sign-in");
+    },
+    onError: () => {
+      console.error("Failed");
+      toast.error("Something went wrong!");
+    },
+  });
+  return mutation;
+};
+
+export const useInsertOrg = () => {
+  const mutation = useMutation({
+    mutationFn: async ({ name, type }: { name: string; type: string }) => {
+      const response = await axios.post("/api/insert/org", {
+        name,
+        type,
+      });
+      if (!response.data) {
+        throw new Error("Something went wrong!");
+      }
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success("Insert ORG Successfull!");
+      // router.push("/sign-in");
+    },
+    onError: () => {
+      console.error("Failed");
+      toast.error("Something went wrong!");
+    },
+  });
+  return mutation;
+};
+
+export const useInsertClothingItem = () => {
+  const mutation = useMutation({
+    mutationFn: async ({
+      name,
+      min_weight,
+      max_weight,
+    }: {
+      name: string;
+      min_weight: string;
+      max_weight: string | undefined;
+    }) => {
+      const response = await axios.post("/api/insert/clothingitem", {
+        name,
+        min_weight,
+        max_weight,
+      });
+      if (!response.data) {
+        throw new Error("Something went wrong!");
+      }
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success("Insert Clothing Item Successfull!");
       // router.push("/sign-in");
     },
     onError: () => {
