@@ -4,7 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGetClothingItems } from "@/hooks/clothing/clothingItems/use-get-clothing-items";
 
 import { format } from "date-fns";
-import { ClockIcon, TrashIcon } from "lucide-react";
+import {
+  CheckCircle2,
+  ClockIcon,
+  Loader,
+  Loader2,
+  TrashIcon,
+} from "lucide-react";
 import { FaCloud, FaCut, FaGraduationCap, FaTshirt } from "react-icons/fa";
 import { AiOutlineLayout } from "react-icons/ai";
 import {
@@ -22,12 +28,15 @@ import { WiCloudy } from "react-icons/wi";
 import { useForm } from "react-hook-form";
 import { OrderItem } from "./order-item";
 import { OrderItemAccordian } from "./order-item-accordian";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ClothingItem } from "@prisma/client";
 import { OrderItemDescription } from "./order-item-description";
 import { DottedSeparator } from "@/components/dotted-separator";
 import { Button } from "@/components/ui/button";
 import { useClothingItemsStore } from "@/hooks/clothing/clothingItems/use-clothing-items-store";
+import { useConfirm } from "@/hooks/use-confirm";
+import { OrderModal } from "@/components/order/order-modal";
+import { useOrderModal } from "@/hooks/clothing/use-order-modal";
 
 export const itemIconMap = [
   { name: "Blanket", icon: FaCloud },
@@ -50,9 +59,21 @@ export const itemIconMap = [
 ];
 
 export const OrderPageClient = () => {
-  const currentDate = new Date();
+  const [orderPending, setOrderPending] = useState<boolean>();
+  const setIsOrderPending = useCallback((val: boolean) => {
+    setOrderPending(val);
+  }, []);
+
+  const { open } = useOrderModal();
   const { data: clothingItems, isLoading } = useGetClothingItems();
-  const { reset } = useClothingItemsStore();
+  const { reset, items } = useClothingItemsStore();
+
+  const currentDate = new Date();
+  const [ConfirmationDialog, confirm] = useConfirm(
+    "Are you sure?",
+    "This action will reset the items you just added and cannot be undone."
+  );
+
   const filterClothingByType = useCallback(
     (type: string): ClothingItem[] => {
       if (!clothingItems) return [];
@@ -76,6 +97,15 @@ export const OrderPageClient = () => {
     () => filterClothingByType("household"),
     [filterClothingByType]
   );
+  const handleReset = async () => {
+    const ok = await confirm();
+    if (!ok) {
+      return;
+    } else {
+      reset();
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="w-full h-96 bg-neutral-200 animate-pulse rounded-lg" />
@@ -84,9 +114,21 @@ export const OrderPageClient = () => {
   if (!clothingItems) {
     return null;
   }
-
+  // if (orderPending) {
+  //   return (
+  //     <div className="w-full h-[380px] md:h-[500px] flex flex-col items-center justify-center gap-y-4">
+  //       <span className="text-lg md:text-xl font-bold">Placing New Order</span>
+  //       <Loader2 className="size-4 md:size-6 animate-spin" />
+  //     </div>
+  //   );
+  // }
   return (
     <Card className="shadow-none border-none">
+      <ConfirmationDialog />
+      <OrderModal
+        clothingItems={clothingItems}
+        setIsOrderPending={setIsOrderPending}
+      />
       <CardHeader className="sm:p-4 xl:p-6">
         <CardTitle className="text-lg md:text-2xl flex items-center justify-between">
           New Order
@@ -116,26 +158,46 @@ export const OrderPageClient = () => {
         </div>
 
         <div
-          className="w-full mt-8 flex items-center justify-between"
+          className="w-full mt-8 flex flex-col md:flex-row items-center justify-between gap-y-4"
           style={{ WebkitUserSelect: "none", userSelect: "none" }}
         >
           <span className="text-xl font-bold">Order Summary</span>
-          <Button
-            variant="destructive"
-            className="flex items-center"
-            onClick={reset}
-          >
-            <TrashIcon className="size-4 md:size-6" />
-            <span>Reset</span>
-          </Button>
+          <div className="flex items-center gap-x-4">
+            <Button
+              className="flex items-center hover:bg-[#66BB6A] bg-[#43A047] transition"
+              disabled={items.length === 0}
+              onClick={open}
+            >
+              <CheckCircle2 className="size-4 md:size-6" />
+              {items.length === 0 ? "No Items" : "Continue"}
+            </Button>
+            <Button
+              variant="destructive"
+              className="flex items-center"
+              disabled={items.length === 0}
+              onClick={handleReset}
+            >
+              <TrashIcon className="size-4 md:size-6" />
+              <span>Reset</span>
+            </Button>
+          </div>
         </div>
         <DottedSeparator
           dotSize="4"
           gapSize="8"
           className="my-4 bg-neutral-600"
         />
-        <div>
-          <OrderItemDescription />
+        <div className="flex justify-center flex-col gap-y-4 ">
+          {orderPending ? (
+            <div className="w-full h-32 flex items-center justify-center flex-col gap-x-4 backdrop-blur-md">
+              <Loader2 className="size-6 md:size-8 animate-spin" />
+              <span className="text-muted-foreground font-semibold">
+                Placing Order
+              </span>
+            </div>
+          ) : (
+            <OrderItemDescription />
+          )}
         </div>
       </CardContent>
     </Card>

@@ -12,42 +12,57 @@ export const OrderItem = ({ name, icon: Icon }: OrderItemProps) => {
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
   const { addItems, decrement_item, items } = useClothingItemsStore();
   const currentItem = items.find((item) => item.item_name === name);
-
-  // Start firing the function repeatedly on mouse down or touch start
-  const handleStartAdd = () => {
-    addItems(name); // Call addItems immediately on first click
-    const id = setInterval(() => {
-      addItems(name); // Call addItems repeatedly
-    }, 300); // Adjust the interval time (200ms for example)
-    setIntervalId(id);
-  };
-  const handleTouchAdd = () => {
-    const id = setInterval(() => {
-      addItems(name); // Call addItems repeatedly
-    }, 200); // Adjust the interval time (200ms for example)
-    setIntervalId(id);
-  };
-
-  const handleStartDecrement = () => {
-    decrement_item(name); // Call decrement_item immediately on first click
-    const id = setInterval(() => {
-      decrement_item(name); // Call decrement_item repeatedly
-    }, 300); // Adjust the interval time (200ms for example)
-    setIntervalId(id);
-  };
-  const handleTouchDecrement = () => {
-    const id = setInterval(() => {
-      decrement_item(name); // Call decrement_item repeatedly
-    }, 200); // Adjust the interval time (200ms for example)
-    setIntervalId(id);
-  };
-
-  // Stop the repeated function call when mouse is up or touch ends
-  const handleEnd = () => {
+  const isPressedRef = useRef(false);
+  const clearCurrentInterval = () => {
     if (intervalId) {
       clearInterval(intervalId);
       setIntervalId(null);
     }
+    isPressedRef.current = false;
+  };
+
+  const handleStartAdd = () => {
+    if (isPressedRef.current) return;
+    isPressedRef.current = true;
+
+    clearCurrentInterval();
+    addItems(name);
+    const id = setInterval(() => {
+      addItems(name);
+    }, 300);
+    setIntervalId(id);
+  };
+  const handleTouchAdd = () => {
+    if (isPressedRef.current) return;
+    isPressedRef.current = true;
+    const id = setInterval(() => {
+      addItems(name);
+    }, 200);
+    setIntervalId(id);
+  };
+
+  const handleStartDecrement = () => {
+    if (isPressedRef.current) return;
+    isPressedRef.current = true;
+
+    clearCurrentInterval();
+    decrement_item(name);
+    const id = setInterval(() => {
+      decrement_item(name);
+    }, 300);
+    setIntervalId(id);
+  };
+  const handleTouchDecrement = () => {
+    if (isPressedRef.current) return;
+    isPressedRef.current = true;
+    const id = setInterval(() => {
+      decrement_item(name);
+    }, 200);
+    setIntervalId(id);
+  };
+
+  const handleEnd = () => {
+    clearCurrentInterval();
   };
 
   return (

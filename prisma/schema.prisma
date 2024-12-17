@@ -20,50 +20,35 @@ model User{
   room_no String?
   floor String?
   staff Staff?
+
+  laundries Laundry[]
+
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   // accounts Account[] if Google or github login is required
 }
-
-// If GOOGLE OR GITHUB LOGIN IS REQUIRED
-// model Account{
-//   id String @id @default(uuid())
-//   userId String
-//   type String
-//   provider String
-//   providerAccountId String
-//   refresh_token String? 
-//   access_token String? 
-//   expires_at Int?
-//   token_type String?
-//   scope String?
-//   id_token String? 
-//   session_state String?
-
-//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-//   @@unique([provider,providerAccountId])
-// }
-
 model Laundry{
-  laundry_no String @default(uuid())
-  date DateTime @default(now())
-  cloth_id String 
-  quantity Int
+  id String @id @default(uuid())
+  total_quantity Int
   confirmed_time DateTime?
-
+  
+  cloth_id String 
   clothes Clothes @relation(fields: [cloth_id],references: [id])
+  
+  userId String
+  user User @relation(fields: [userId],references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([cloth_id])
-  @@id([laundry_no,date,cloth_id])
+ 
 }
 
 model Clothes {
   id            String          @id @default(uuid())
-  clothingItems ClothingItem[]  @relation("ClothesToClothingItems")
+  clothingItems     ClothesClothingItem[]  // Updated to reference the intermediate model
   laundry       Laundry?   
 
   createdAt     DateTime        @default(now())
@@ -77,13 +62,22 @@ model ClothingItem {
   min_weight_in_grams Int
   max_weight_in_grams Int?
 
-  clothes         Clothes[]  @relation("ClothesToClothingItems") // Many-to-many relation
+  clothes             ClothesClothingItem[]
 
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
 }
 
+model ClothesClothingItem {
+  clothes         Clothes     @relation(fields: [clothesId], references: [id],onDelete: Cascade)
+  clothesId       String
+  clothingItem    ClothingItem @relation(fields: [clothingItemId], references: [id],onDelete: Cascade)
+  clothingItemId  String
+  
+  quantity        Int          // Additional field to store quantity
 
+  @@id([clothesId, clothingItemId]) // Composite primary key
+}
 
 model HostelFloorRoom{
   hostel_id String 
@@ -145,3 +139,24 @@ model Hostel{
   updatedAt DateTime @updatedAt
 
 }
+
+
+// If GOOGLE OR GITHUB LOGIN IS REQUIRED
+// model Account{
+//   id String @id @default(uuid())
+//   userId String
+//   type String
+//   provider String
+//   providerAccountId String
+//   refresh_token String? 
+//   access_token String? 
+//   expires_at Int?
+//   token_type String?
+//   scope String?
+//   id_token String? 
+//   session_state String?
+
+//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   @@unique([provider,providerAccountId])
+// }

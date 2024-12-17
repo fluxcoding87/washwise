@@ -42,10 +42,6 @@ export const OrderItemDescription = () => {
         {items.map((item) => (
           <TableRow key={item.item_name} className="font-medium">
             <TableCell>{item.item_name}</TableCell>
-            {/* <TableCell>
-              {item.quantity}{" "}
-              {item.quantity === 1 ? item.item_name : `${item.item_name}s`}
-            </TableCell> */}
             <TableCell>{item.quantity}</TableCell>
           </TableRow>
         ))}
