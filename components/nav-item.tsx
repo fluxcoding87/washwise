@@ -3,9 +3,10 @@ import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { IconType } from "react-icons/lib";
 
 interface NavItemProps {
-  icon: LucideIcon;
+  icon: LucideIcon | IconType;
   title: string;
   href: string;
 }

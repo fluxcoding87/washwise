@@ -1,13 +1,13 @@
-import { FullOrganization } from "@/types/org";
-import { Hostel, Organization } from "@prisma/client";
+import { FullLaundry } from "@/types/clothing";
+
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export function useGetOrganizations() {
+export function useGetLaundriesByHostelId(id: string) {
   const query = useQuery({
-    queryKey: ["org"],
+    queryKey: ["hostel_laundries"],
     queryFn: async () => {
-      const response = await axios.get<FullOrganization>("/api/organization");
+      const response = await axios.get<FullLaundry[]>(`/api/clothing/${id}`);
       if (!response.data) {
         return null;
       }

@@ -15,6 +15,11 @@ export async function GET(req: Request) {
       },
       include: {
         hostel: true,
+        staff: {
+          include: {
+            organization: true,
+          },
+        },
       },
     });
 

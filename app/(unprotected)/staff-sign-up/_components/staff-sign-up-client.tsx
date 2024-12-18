@@ -15,9 +15,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { signUpFormSchema } from "@/types/auth";
+import { signUpStaffSchema } from "@/types/auth";
 import Link from "next/link";
-import { useRegister } from "@/hooks/auth/useRegister";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { useGetOrganizations } from "@/hooks/organization/use-get-organizations";
 import {
@@ -30,22 +29,22 @@ import {
 import { useEffect, useState } from "react";
 import { Hostel } from "@prisma/client";
 import Image from "next/image";
+import { useStaffRegister } from "@/hooks/auth/useStaffRegister";
 
-export const SignUpClient = () => {
+const groupMap = ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8"];
+
+export const StaffSignUpClient = () => {
   const [organizationId, setOrganizationId] = useState<string | undefined>(
     undefined
   );
   const [hostels, setHostels] = useState<Hostel[] | undefined>(undefined);
-  const [selectedHostel, setSelectedHostel] = useState<Hostel | undefined>(
+  const [selectedHostel, setSelectedHostel] = useState<string | undefined>(
     undefined
   );
-  const [selectedFloor, setSelectedFloor] = useState<string | undefined>(
-    undefined
-  );
-  const { mutate, isPending } = useRegister();
+  const [role, setRole] = useState<string>();
+  const [group, setGroup] = useState<string>();
+  const { mutate, isPending } = useStaffRegister();
   const { data: organizations, isLoading } = useGetOrganizations();
-  // console.log(organizations);
-
   useEffect(() => {
     if (!organizations) return;
     if (organizationId) {
@@ -57,22 +56,21 @@ export const SignUpClient = () => {
     }
   }, [organizationId, organizations]);
 
-  const form = useForm<z.infer<typeof signUpFormSchema>>({
-    resolver: zodResolver(signUpFormSchema),
+  const form = useForm<z.infer<typeof signUpStaffSchema>>({
+    resolver: zodResolver(signUpStaffSchema),
     defaultValues: {
       name: "",
       email: "",
       password: "",
       mobile_number: "",
-      room_no: "",
       hostel_id: "",
-      floor: "",
+      role: "",
+      group: "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof signUpFormSchema>) => {
+  const onSubmit = (values: z.infer<typeof signUpStaffSchema>) => {
     mutate(values);
-    console.log(values);
   };
 
   return (
@@ -80,7 +78,7 @@ export const SignUpClient = () => {
       <CardHeader>
         <CardTitle className="text-xl md:text-2xl text-neutral-700 font-bold flex items-center justify-between">
           <span className="text-lg font-medium tracking-tight">
-            Registeration
+            Staff Sign Up
           </span>
           <div className="relative size-8">
             <Image fill src={Logo} alt="logo" />
@@ -167,6 +165,79 @@ export const SignUpClient = () => {
               />
             </div>
             <div className="p-3 border border-gray-300 rounded-md flex items-center font-bold text-sm tracking-tight text-neutral-700">
+              Group Details
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-x-1">
+                      Role
+                      <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          setRole(value);
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a Role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="hostel">Hostel Access</SelectItem>
+                          <SelectItem value="both">
+                            Hostel & Plant Access
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="group"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-x-1">
+                      Group
+                      {role === "hostel" && (!selectedHostel || !group) && (
+                        <span className="text-red-500">*</span>
+                      )}
+                    </FormLabel>
+                    <FormControl>
+                      <Select
+                        onValueChange={(value) => {
+                          setGroup(value);
+                          field.onChange(value);
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a Group" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="multiple">
+                            None of these
+                          </SelectItem>
+                          {groupMap.map((item) => (
+                            <SelectItem key={item} value={item}>
+                              {item}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="p-3 border border-gray-300 rounded-md flex items-center font-bold text-sm tracking-tight text-neutral-700">
               Hostel Details
             </div>
             {isLoading ? (
@@ -178,22 +249,38 @@ export const SignUpClient = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <Select onValueChange={(value) => setOrganizationId(value)}>
-                    <FormLabel className="flex items-center gap-x-1 mb-2">
-                      Organization
-                      <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select an Organization" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {organizations?.map((item) => (
-                        <SelectItem value={item.id} key={item.id}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormField
+                    control={form.control}
+                    name="orgId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-x-1">
+                          Organization
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Select
+                            onValueChange={(value) => {
+                              field.onChange(value);
+                              setOrganizationId(value);
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select an Organization" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {organizations?.map((item) => (
+                                <SelectItem value={item.id} key={item.id}>
+                                  {item.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
                 <FormField
                   name="hostel_id"
@@ -202,17 +289,16 @@ export const SignUpClient = () => {
                     <FormItem>
                       <FormLabel className="flex items-center gap-x-1">
                         Hostel
-                        <span className="text-red-500">*</span>
+                        {role === "hostel" && !selectedHostel && (
+                          <span className="text-red-500">*</span>
+                        )}
                       </FormLabel>
                       <FormControl>
                         <Select
                           disabled={!organizationId}
                           onValueChange={(value) => {
+                            setSelectedHostel(value);
                             field.onChange(value);
-                            const hostel = hostels?.find(
-                              (item) => item.id === value
-                            );
-                            setSelectedHostel(hostel);
                           }}
                         >
                           <SelectTrigger>
@@ -237,128 +323,21 @@ export const SignUpClient = () => {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  name="floor"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="flex items-center gap-x-1">
-                        Floor
-                        <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          disabled={!organizationId || !selectedHostel}
-                          onValueChange={(value) => {
-                            let absValue = value;
-                            if (value === "0") {
-                              absValue = "0";
-                            } else {
-                              absValue = absValue + "00";
-                            }
-
-                            field.onChange(absValue);
-                            setSelectedFloor(absValue);
-                          }}
-                        >
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={
-                                !organizationId || !selectedHostel
-                                  ? "Hostel or Organization not selected"
-                                  : "Select Floor"
-                              }
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {[
-                              "Ground Floor",
-                              "First Floor",
-                              "Second Floor",
-                              "Third Floor",
-                              "Fourth Floor",
-                              "Fifth Floor",
-                              "Sixth Floor",
-                              "Seventh Floor",
-                              "Eighth Floor",
-                            ].map((item, idx) => {
-                              const limit = selectedHostel?.total_floors;
-                              const initial = selectedHostel?.name
-                                .charAt(0)
-                                .toUpperCase();
-                              if (idx >= (limit ?? 6)) {
-                                return null;
-                              } else {
-                                return (
-                                  <SelectItem key={item} value={idx.toString()}>
-                                    {initial}
-                                    {idx === 0 ? "" : idx} ({item})
-                                  </SelectItem>
-                                );
-                              }
-                            })}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="room_no"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel className="flex items-center gap-x-1">
-                        Room Number
-                        <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={(value) => field.onChange(value)}
-                          disabled={!selectedFloor}
-                        >
-                          <SelectTrigger>
-                            <SelectValue
-                              placeholder={
-                                !selectedFloor
-                                  ? "Select a Floor First"
-                                  : "Select a Room Number"
-                              }
-                            />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {[
-                              1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                              16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
-                              28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-                              40,
-                            ].map((item, idx) => {
-                              if (!selectedFloor) return;
-                              const selectedFloorNumber = +selectedFloor;
-                              const displayNumber = selectedFloorNumber + item;
-
-                              return (
-                                <SelectItem
-                                  value={displayNumber.toString()}
-                                  key={item}
-                                >
-                                  {displayNumber}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
             )}
-            <Button className="font-semibold" disabled={isPending}>
+            {role === "hostel" && (!selectedHostel || !group) && (
+              <div className="text-red-600 text-sm font-semibold text-center">
+                {`Select a ${!selectedHostel ? "Hostel" : ""} ${
+                  !selectedHostel && !group ? "&" : ""
+                } ${!group ? "Group" : ""} for Hostel Access`}
+              </div>
+            )}
+            <Button
+              className="font-semibold"
+              disabled={
+                isPending || (role === "hostel" && (!selectedHostel || !group))
+              }
+            >
               Sign Up
             </Button>
           </form>

@@ -8,16 +8,23 @@ import {
   MenuIcon,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./ui/sheet";
-import { useCurrentUser } from "@/hooks/user/use-current-user";
+
 import Image from "next/image";
 import { DottedSeparator } from "./dotted-separator";
 import { CalendarCheck2, HelpCircle, HomeIcon, Package } from "lucide-react";
 import { signOut } from "next-auth/react";
-import Link from "next/link";
-import { MobileSidebarItem } from "./mobile-sidebar-item";
 
-export const MobileSidebar = () => {
-  const { data: user, isLoading } = useCurrentUser();
+import { MobileSidebarItem } from "./mobile-sidebar-item";
+import { FullUser } from "@/types/auth";
+import { cn } from "@/lib/utils";
+import { MdHistory } from "react-icons/md";
+
+interface MobileSidebarProps {
+  user: FullUser;
+  isLoading: boolean;
+}
+
+export const MobileSidebar = ({ user, isLoading }: MobileSidebarProps) => {
   if (isLoading) {
     return (
       <div className="block md:hidden animate-pulse">
@@ -26,7 +33,11 @@ export const MobileSidebar = () => {
     );
   }
   if (!user) {
-    return null;
+    return (
+      <div className="block md:hidden animate-pulse">
+        <MenuIcon className="size-6" />
+      </div>
+    );
   }
   let floor = "First Floor";
   if (user.floor?.startsWith("0")) {
@@ -71,11 +82,19 @@ export const MobileSidebar = () => {
           <DottedSeparator className="mt-2" dotSize="2" gapSize="3" />
           <div className="px-2 py-4 flex flex-col justify-center gap-y-4 text-sm">
             <MobileSidebarItem title="Home" icon={HomeIcon} href="/" />
-            <MobileSidebarItem
-              title="New Order"
-              icon={Package}
-              href="/new-order"
-            />
+            {user.staff ? (
+              <MobileSidebarItem
+                icon={MdHistory}
+                title="History"
+                href="/history"
+              />
+            ) : (
+              <MobileSidebarItem
+                title="New Order"
+                icon={Package}
+                href="/new-order"
+              />
+            )}
             <MobileSidebarItem
               title="Pickups"
               icon={CalendarCheck2}
@@ -94,26 +113,72 @@ export const MobileSidebar = () => {
               <span>Logout</span>
             </div>
           </div>
-          <div>
-            <div className="flex items-center justify-center">
-              <span className="font-bold text-lg">
-                {user.hostel.name} (
-                {user.hostel.gender_type.charAt(0).toLowerCase() === "m"
-                  ? "Boys"
-                  : "Girls"}
-                )
-              </span>
-            </div>
-            <div className="max-w-fit mx-auto text-sm font-semibold py-4 space-y-3">
-              <div className="flex items-center justify-between w-fit gap-x-2">
-                <LayersIcon className="size-5 text-primary" />
-                <span>{floor}</span>
+          <div className="flex items-center justify-center p-10">
+            {user.hostel ? (
+              <div
+                className={cn(
+                  "pb-2 pl-12 text-sm tracking-tight space-y-2",
+                  user.staff && user.hostel && "p-0 py-2 -mt-2"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex items-center gap-x-4 px-4",
+                    user.staff &&
+                      user.hostel &&
+                      "font-semibold justify-center text-[15px]"
+                  )}
+                >
+                  <BuildingIcon
+                    className={cn(
+                      "size-4 text-primary",
+                      user.staff && user.hostel && "hidden"
+                    )}
+                  />
+                  {user.hostel.name} (
+                  {user.hostel.gender_type.charAt(0).toLowerCase() === "m"
+                    ? "Boys"
+                    : "Girls"}
+                  )
+                </div>
+                {user.staff ? (
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-center gap-x-4 px-4 font-medium">
+                      <span>Group {user.staff.group}</span>
+                    </div>
+                    <div className="text-sm font-semibold flex items-center justify-center gap-x-4 px-4 text-muted-foreground">
+                      <span>
+                        {user.staff.role === "hostel"
+                          ? "Hostel Access Only"
+                          : "Plant and Hostel Access"}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-x-4 px-4">
+                      <LayersIcon className="size-4 text-primary" />
+                      <span>{floor}</span>
+                    </div>
+                    <div className="flex items-center gap-x-4 px-4">
+                      <DoorOpen className="size-4 text-primary" />
+                      <span>Room {user.room_no}</span>
+                    </div>
+                  </>
+                )}
               </div>
-              <div className="flex items-center justify-between w-fit gap-x-2">
-                <DoorOpen className="size-5 text-primary" />
-                <span>Room {user.room_no}</span>
+            ) : (
+              <div className="space-y-1 -mt-2 py-2">
+                <div className="flex items-center justify-center font-semibold text-[15px]">
+                  {user.staff?.organization.name}
+                </div>
+                <div className="flex items-center justify-center text-sm font-medium text-muted-foreground">
+                  {user.staff?.role === "both"
+                    ? "Hostel & Plant Access"
+                    : "Hostel Access"}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </SheetContent>

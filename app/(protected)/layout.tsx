@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { UserButton } from "@/components/user-button";
 import Image from "next/image";
 import Link from "next/link";
+import { NavClient } from "./_components/nav-client";
 
 export default function ProtectedPageLayout({
   children,
@@ -21,11 +22,7 @@ export default function ProtectedPageLayout({
             Washwise
           </h2>
         </Link>
-        <nav className="flex items-center justify-center">
-          <Navbar />
-          <MobileSidebar />
-        </nav>
-        <UserButton />
+        <NavClient />
       </header>
       <main className="p-4 h-full">{children}</main>
     </section>

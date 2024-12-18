@@ -44,3 +44,23 @@ export async function POST(req: Request) {
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
+
+export async function GET() {
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
+    const laundries = await db.laundry.findMany({
+      where: {
+        userId: currentUser.id,
+      },
+    });
+
+    return NextResponse.json(laundries);
+  } catch (e) {
+    console.log("LAUNDRIES_ORDER_GET", e);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}

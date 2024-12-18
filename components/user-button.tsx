@@ -1,6 +1,5 @@
 "use client";
 
-import { useCurrentUser } from "@/hooks/user/use-current-user";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import {
   BuildingIcon,
@@ -14,16 +13,24 @@ import { Separator } from "./ui/separator";
 import { DottedSeparator } from "./dotted-separator";
 import { Button } from "./ui/button";
 import { signOut } from "next-auth/react";
-export const UserButton = () => {
-  const { data: user, isLoading } = useCurrentUser();
+import { cn } from "@/lib/utils";
+import { FullUser } from "@/types/auth";
 
+interface UserButtonProps {
+  user: FullUser;
+  isLoading: boolean;
+}
+
+export const UserButton = ({ user, isLoading }: UserButtonProps) => {
   if (isLoading) {
     return (
       <div className="hidden md:flex items-center justify-center size-10 rounded-full p-2 relative bg-[#3F51B5] animate-pulse"></div>
     );
   }
   if (!user) {
-    return null;
+    return (
+      <div className="hidden md:flex items-center justify-center size-10 rounded-full p-2 relative bg-[#3F51B5] animate-pulse"></div>
+    );
   }
   let floor = "First Floor";
   if (user.floor?.startsWith("0")) {
@@ -69,24 +76,72 @@ export const UserButton = () => {
           <div className="text-xs text-gray-600 -mt-2">{user.email}</div>
         </div>
         <Separator className="-mt-2 mb-4" />
-        <div className="pb-2 pl-12 text-sm tracking-tight space-y-2">
-          <div className="flex items-center gap-x-4 px-4">
-            <BuildingIcon className="size-4 text-primary" />
-            {user.hostel.name} (
-            {user.hostel.gender_type.charAt(0).toLowerCase() === "m"
-              ? "Boys"
-              : "Girls"}
-            )
+        {user.hostel ? (
+          <div
+            className={cn(
+              "pb-2 pl-12 text-sm tracking-tight space-y-2",
+              user.staff && user.hostel && "p-0 py-2 -mt-2"
+            )}
+          >
+            <div
+              className={cn(
+                "flex items-center gap-x-4 px-4",
+                user.staff &&
+                  user.hostel &&
+                  "font-semibold justify-center text-[15px]"
+              )}
+            >
+              <BuildingIcon
+                className={cn(
+                  "size-4 text-primary",
+                  user.staff && user.hostel && "hidden"
+                )}
+              />
+              {user.hostel.name} (
+              {user.hostel.gender_type.charAt(0).toLowerCase() === "m"
+                ? "Boys"
+                : "Girls"}
+              )
+            </div>
+            {user.staff ? (
+              <div className="space-y-1">
+                <div className="flex items-center justify-center gap-x-4 px-4 font-medium">
+                  <span>Group {user.staff.group}</span>
+                </div>
+                <div className="text-sm font-semibold flex items-center justify-center gap-x-4 px-4 text-muted-foreground">
+                  <span>
+                    {user.staff.role === "hostel"
+                      ? "Hostel Access Only"
+                      : "Plant and Hostel Access"}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-x-4 px-4">
+                  <LayersIcon className="size-4 text-primary" />
+                  <span>{floor}</span>
+                </div>
+                <div className="flex items-center gap-x-4 px-4">
+                  <DoorOpen className="size-4 text-primary" />
+                  <span>Room {user.room_no}</span>
+                </div>
+              </>
+            )}
           </div>
-          <div className="flex items-center gap-x-4 px-4">
-            <LayersIcon className="size-4 text-primary" />
-            <span>{floor}</span>
+        ) : (
+          <div className="space-y-1 -mt-2 py-2">
+            <div className="flex items-center justify-center font-semibold text-[15px]">
+              {user.staff?.organization.name}
+            </div>
+            <div className="flex items-center justify-center text-sm font-medium text-muted-foreground">
+              {user.staff?.role === "both"
+                ? "Hostel & Plant Access"
+                : "Hostel Access"}
+            </div>
           </div>
-          <div className="flex items-center gap-x-4 px-4">
-            <DoorOpen className="size-4 text-primary" />
-            <span>Room {user.room_no}</span>
-          </div>
-        </div>
+        )}
+
         <DottedSeparator />
         <div className="flex items-center justify-center p-2">
           <Button

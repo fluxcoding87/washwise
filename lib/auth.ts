@@ -3,6 +3,30 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import db from "./db";
 import bcrypt from "bcrypt";
+import { User } from "@prisma/client";
+
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id: string;
+      email: string;
+      name?: string | null;
+      role: string; // Adding the role field to the session
+      hostel_id?: string | null;
+    };
+  }
+  interface User {
+    role: string | null;
+    hostel_id?: string | null;
+  }
+}
+declare module "next-auth/jwt" {
+  interface JWT {
+    role: string | null; // Adding the role field to the JWT token
+    hostel_id?: string | null;
+  }
+}
+
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(db),
   providers: [
@@ -17,7 +41,7 @@ export const authOptions: AuthOptions = {
           throw new Error("Invalid Credentials");
         }
 
-        const user = await db.user.findUnique({
+        const user: User | null = await db.user.findUnique({
           where: {
             email: credentials.email,
           },
@@ -33,7 +57,10 @@ export const authOptions: AuthOptions = {
         if (!isCorrectPassowrd) {
           throw new Error("Invalid Credentials");
         }
-        return user;
+        if (user) {
+          return user;
+        }
+        return null;
       },
     }),
   ],
@@ -43,8 +70,23 @@ export const authOptions: AuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.role = user.role;
+        token.hostel_id = user.hostel_id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token.role) {
+        session.user.role = token.role;
+      }
+      if (token.hostel_id) {
+        session.user.hostel_id = token.hostel_id;
+      }
+      return session;
+    },
     async redirect({ url, baseUrl }) {
-      // Always redirect to "/" after sign-in with a 303 redirect
       return baseUrl;
     },
   },

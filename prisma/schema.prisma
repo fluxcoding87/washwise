@@ -14,6 +14,8 @@ model User{
   emailVerified DateTime?
   image String?
   hashedPassword String?
+  role String?
+
   mobile_number String?
   hostel_id String?
   hostel Hostel? @relation(fields: [hostel_id],references: [id], onDelete: Cascade)
@@ -95,13 +97,16 @@ model HostelFloorRoom{
 model Staff{
   id String @id @default(uuid())
   userId String
-  hostelId String
+  hostel_id String?
+  orgId String
   name String
   role String
   group String?
 
   user User @relation(fields: [userId],references: [id],onDelete: Cascade)
-  hostel Hostel @relation(fields: [hostelId], references: [id], onDelete: Cascade)
+  hostel Hostel? @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [orgId],references: [id],onDelete: Cascade)
+
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -115,7 +120,7 @@ model Organization{
  type String
 
  hostels Hostel[]
-
+ staffs Staff[]
  createdAt DateTime @default(now())
  updatedAt DateTime @updatedAt
 }

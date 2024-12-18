@@ -1,8 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "sonner";
 
 export const usePostClothes = () => {
+  const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async ({
       clothingItemIdWithQty,
@@ -21,6 +22,7 @@ export const usePostClothes = () => {
       return response.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["laundry"] });
       toast.success("Order Placed Successfully!");
     },
     onError: () => {

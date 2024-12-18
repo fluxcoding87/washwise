@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import {
   CheckCircle2,
   ClockIcon,
-  Loader,
+  Package,
   Loader2,
   TrashIcon,
 } from "lucide-react";
@@ -25,8 +25,7 @@ import {
 } from "react-icons/gi";
 import { BiSquare } from "react-icons/bi";
 import { WiCloudy } from "react-icons/wi";
-import { useForm } from "react-hook-form";
-import { OrderItem } from "./order-item";
+
 import { OrderItemAccordian } from "./order-item-accordian";
 import { useCallback, useMemo, useState } from "react";
 import { ClothingItem } from "@prisma/client";
@@ -37,6 +36,7 @@ import { useClothingItemsStore } from "@/hooks/clothing/clothingItems/use-clothi
 import { useConfirm } from "@/hooks/use-confirm";
 import { OrderModal } from "@/components/order/order-modal";
 import { useOrderModal } from "@/hooks/clothing/use-order-modal";
+import { DayTime } from "@/components/day-time";
 
 export const itemIconMap = [
   { name: "Blanket", icon: FaCloud },
@@ -130,12 +130,12 @@ export const OrderPageClient = () => {
         setIsOrderPending={setIsOrderPending}
       />
       <CardHeader className="sm:p-4 xl:p-6">
-        <CardTitle className="text-lg md:text-2xl flex items-center justify-between">
-          New Order
-          <div className="flex items-center text-sm md:text-lg md:tracking-tight gap-x-1 md:gap-x-2 font-normal text-sky-700">
-            <ClockIcon className="size-4 md:size-5" />
-            {format(currentDate, "EEEE, do MMM")}
+        <CardTitle className=" flex items-center justify-between tracking-wide">
+          <div className="flex items-center gap-x-2 text-lg md:text-xl">
+            <Package className="size-5 md:size-6" />
+            <span>New Order</span>
           </div>
+          <DayTime />
         </CardTitle>
       </CardHeader>
       <CardContent className="sm:p-4 xl:p-6">
@@ -165,7 +165,7 @@ export const OrderPageClient = () => {
           <div className="flex items-center gap-x-4">
             <Button
               className="flex items-center hover:bg-[#66BB6A] bg-[#43A047] transition"
-              disabled={items.length === 0}
+              disabled={items.length === 0 || orderPending}
               onClick={open}
             >
               <CheckCircle2 className="size-4 md:size-6" />
@@ -174,7 +174,7 @@ export const OrderPageClient = () => {
             <Button
               variant="destructive"
               className="flex items-center"
-              disabled={items.length === 0}
+              disabled={items.length === 0 || orderPending}
               onClick={handleReset}
             >
               <TrashIcon className="size-4 md:size-6" />
