@@ -48,6 +48,26 @@ export const Navbar = ({ user }: { user: FullUser }) => {
         </>
       )}
       {/* TODO PLANT ONLY ACCESS AND ADMIN ACCESS */}
+      {plantAndHostelAccess && (
+        <>
+          <NavItem icon={HomeIcon} title="Home" href="/plant-staff" />
+          <NavItem
+            icon={MdHistory}
+            title="History"
+            href="/plant-staff/history"
+          />
+          <NavItem
+            icon={CalendarCheck2}
+            title="Pickups"
+            href="/plant-staff/pickups"
+          />
+          <NavItem
+            icon={HelpCircle}
+            title="Raise an Issue"
+            href="/plant-staff/issue"
+          />
+        </>
+      )}
     </div>
   );
 };

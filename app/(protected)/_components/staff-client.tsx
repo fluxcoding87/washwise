@@ -17,7 +17,8 @@ export const StaffClient = () => {
     session.data.user.hostel_id
   ) {
     return <HostelStaffClient hostelId={session.data.user.hostel_id} />;
-  } else if (session.data?.user.role === "plantStaff") {
+  }
+  if (session.data?.user.role === "plantStaff") {
     redirect("/plant-staff");
   }
   return null;

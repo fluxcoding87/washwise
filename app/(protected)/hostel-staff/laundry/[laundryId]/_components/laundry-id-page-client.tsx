@@ -67,6 +67,7 @@ export const LaundryIdPageClient = ({ id }: LaundryIdPageClientProps) => {
             data={data?.clothes.clothingItems}
             clothesClothingItems={data.clothes.clothingItems}
             totalQty={data.total_quantity}
+            confirmedAt={data.confirmed_time}
           />
         </div>
       </CardContent>

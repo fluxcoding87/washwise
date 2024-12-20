@@ -6,13 +6,17 @@ export const ProtectedPageClient = () => {
   const session = useSession();
 
   const role = session.data?.user.role;
+
   if (role === "hostelStaff") {
     redirect("/hostel-staff");
-  } else if (role === "plant-staff") {
+  }
+  if (role === "plantStaff") {
     redirect("/plant-staff");
-  } else if (role === "student") {
+  }
+  if (role === "student") {
     redirect("/student");
-  } else if (role === "admin") {
+  }
+  if (role === "admin") {
     redirect("/admin");
   }
   return null;

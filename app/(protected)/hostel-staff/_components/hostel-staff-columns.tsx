@@ -1,9 +1,11 @@
 "use client";
 
 import { CellAction } from "@/components/cell-action";
+import { Button } from "@/components/ui/button";
 import { FullLaundry } from "@/types/clothing";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
+import { ArrowUpDown } from "lucide-react";
 
 export const HostelStaffColumns: ColumnDef<FullLaundry>[] = [
   {
@@ -29,7 +31,33 @@ export const HostelStaffColumns: ColumnDef<FullLaundry>[] = [
     accessorKey: "total_quantity",
     header: "Total",
     cell: ({ row }) => {
-      return <div className="">{row.original.total_quantity}</div>;
+      return <div className="font-semibold">{row.original.total_quantity}</div>;
+    },
+  },
+  {
+    accessorKey: "confirmed_time",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Confirmed
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const confirmedTime = row.original.confirmed_time;
+      return (
+        <div className="font-semibold">
+          {confirmedTime ? (
+            format(confirmedTime, "EEEE, h:mm a")
+          ) : (
+            <div>Not Confirmed</div>
+          )}
+        </div>
+      );
     },
   },
   {

@@ -35,6 +35,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { ClothesClothingItem, ClothingItem } from "@prisma/client";
 import {
+  CheckCircle,
   CheckCircle2,
   CheckIcon,
   PlusIcon,
@@ -56,6 +57,7 @@ interface DataTableProps<TData, TValue> {
     clothingItem: ClothingItem;
   })[];
   id: string;
+  confirmedAt: Date | null;
 }
 
 export const editClothesClothingItemSchema = z.object({
@@ -73,6 +75,7 @@ export function OrderDataTable<TData, TValue>({
   id,
   totalQty,
   clothesClothingItems,
+  confirmedAt,
 }: DataTableProps<TData, TValue>) {
   const [tableData, setTableData] = useState(data);
   const table = useReactTable({
@@ -83,6 +86,10 @@ export function OrderDataTable<TData, TValue>({
   const [ConfirmationDialog, confirm] = useConfirm(
     "Are you sure?",
     "This action is reversible with reload or reset"
+  );
+  const [OrderConfirmDialog, confirmOrder] = useConfirm(
+    "Are you sure?",
+    "This action cannot be undone. Once you verify it will go for processing"
   );
   const { mutate, isPending } = useUpdateLaundry(id);
   const [doubleClickedRow, setDoubleClickedRow] = useState<string | null>(null);
@@ -280,7 +287,13 @@ export function OrderDataTable<TData, TValue>({
   const externalSubmit = () => {
     handleSubmit(onSubmit)();
   };
-  const onSubmit = (values: z.infer<typeof editClothesClothingItemSchema>) => {
+  const onSubmit = async (
+    values: z.infer<typeof editClothesClothingItemSchema>
+  ) => {
+    const ok = await confirmOrder();
+    if (!ok) {
+      return;
+    }
     mutate(values);
   };
   const updateTableData = (doubleClickedRow: string) => {
@@ -400,6 +413,7 @@ export function OrderDataTable<TData, TValue>({
         selectedItems={selectedItems}
         handleAddRow={handleAddRow}
       />
+      <OrderConfirmDialog />
       <Table>
         <TableHeader className="py-2">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -423,7 +437,7 @@ export function OrderDataTable<TData, TValue>({
                           className="font-extrabold bg-[#E0F7FA]"
                           variant="outline"
                           onClick={open}
-                          disabled={isPending}
+                          disabled={isPending || !!confirmedAt}
                         >
                           <PlusIcon className="font-extrabold text-black" />
                         </Button>
@@ -458,7 +472,8 @@ export function OrderDataTable<TData, TValue>({
                   className={cn(
                     "cursor-pointer",
                     modifiedRows.find((item) => item.id === row.id)?.value &&
-                      "bg-[#FFE0B2]"
+                      "bg-[#FFE0B2]",
+                    confirmedAt && "pointer-events-none"
                   )}
                   onDoubleClick={() => handleDoubleClick(row)}
                   onClick={() => handleClick(row)}
@@ -624,30 +639,40 @@ export function OrderDataTable<TData, TValue>({
           </TableRow>
         </TableFooter>
       </Table>
-      <div className="py-8 px-2 flex items-center">
-        <button
-          disabled={isPending}
-          onClick={() => {
-            if (doubleClickedRow) {
-              return handleClick();
-            } else {
-              return externalSubmit();
-            }
-          }}
-          className={cn(
-            "flex w-full mx-auto items-center disabled:opacity-20 disabled:pointer-events-none justify-center gap-x-2 font-semibold text-base hover:opacity-80 transition px-4 py-3 rounded-lg text-white cursor-pointer",
-            doubleClickedRow ? "bg-[#4CAF50] hover:bg-[#4CAF50]" : "bg-sky-700"
-          )}
-        >
-          {doubleClickedRow ? (
-            <SaveIcon className="size-5" />
-          ) : (
-            <CheckCircle2 className="size-5" />
-          )}
 
-          <span>{doubleClickedRow ? "Save Changes" : "Confirm Order"}</span>
-        </button>
-      </div>
+      {confirmedAt ? (
+        <div className="mt-4 rounded-md flex items-center justify-center py-6 bg-green-600 text-white font-bold gap-x-2 text-lg">
+          <CheckCircle className="size-5" />
+          <span>Order Confirmed by Hostel Staff</span>
+        </div>
+      ) : (
+        <div className="py-8 px-2 flex items-center">
+          <button
+            disabled={isPending}
+            onClick={() => {
+              if (doubleClickedRow) {
+                return handleClick();
+              } else {
+                return externalSubmit();
+              }
+            }}
+            className={cn(
+              "flex w-full mx-auto items-center disabled:opacity-20 disabled:pointer-events-none justify-center gap-x-2 font-semibold text-base hover:opacity-80 transition px-4 py-3 rounded-lg text-white cursor-pointer",
+              doubleClickedRow
+                ? "bg-[#4CAF50] hover:bg-[#4CAF50]"
+                : "bg-sky-700"
+            )}
+          >
+            {doubleClickedRow ? (
+              <SaveIcon className="size-5" />
+            ) : (
+              <CheckCircle2 className="size-5" />
+            )}
+
+            <span>{doubleClickedRow ? "Save Changes" : "Confirm Order"}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,9 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useGlobalTime } from "@/hooks/use-global-time";
 import { format } from "date-fns";
 import { ClockIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const DayTime = () => {
-  const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  // const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const { currentTime, setTime: setCurrentTime } = useGlobalTime();
   useEffect(() => {
     // Function to update the time
     const updateCurrentTime = () => {

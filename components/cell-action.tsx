@@ -9,6 +9,7 @@ import {
 import { Button } from "./ui/button";
 import { ExternalLink, MoreHorizontal, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 interface CellActionProps {
   id: string;
@@ -17,6 +18,7 @@ interface CellActionProps {
 }
 
 export const CellAction = ({ id, roomNo, placedOn }: CellActionProps) => {
+  const { data } = useSession();
   const router = useRouter();
 
   return (
@@ -30,7 +32,7 @@ export const CellAction = ({ id, roomNo, placedOn }: CellActionProps) => {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuItem
-          className="cursor-pointer"
+          className="cursor-pointer py-3 px-4 hover:bg-neutral-200 transition"
           onClick={() => {
             router.push(`/hostel-staff/laundry/${id}`);
           }}
@@ -38,10 +40,13 @@ export const CellAction = ({ id, roomNo, placedOn }: CellActionProps) => {
           <ExternalLink className="size-4 mr-2" />
           View Details
         </DropdownMenuItem>
-        <DropdownMenuItem className="text-red-600 hover:text-red-700 cursor-pointer">
-          <Trash className="size-4 mr-2" />
-          Delete
-        </DropdownMenuItem>
+        {data?.user.role === "plantStaff" ||
+          (data?.user.role === "admin" && (
+            <DropdownMenuItem className="text-red-600 hover:text-red-700 py-3 px-4 hover:bg-neutral-200 transition cursor-pointer">
+              <Trash className="size-4 mr-2" />
+              Delete
+            </DropdownMenuItem>
+          ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

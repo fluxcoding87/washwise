@@ -23,9 +23,10 @@ export const HostelStaffClient = ({ hostelId }: { hostelId: string }) => {
   }
   return (
     <Card className="shadow-none border-none">
+      {/* OPTIMIZATION: SEPERATE HEADER COMPONENT FOR ALL THE CARDS */}
       <CardHeader className="p-0 py-4 md:p-6">
         <CardTitle className="flex flex-col-reverse gap-y-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-x-2 px-4">
+          <div className="flex items-center md:justify-start justify-center gap-x-2 px-4">
             <HiOutlineRefresh className="size-5 md:size-6" />
             <span className="text-lg md:text-xl">Recent Placed Orders</span>
           </div>
