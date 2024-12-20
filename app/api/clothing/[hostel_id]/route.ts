@@ -8,13 +8,12 @@ export async function GET(
   { params }: { params: { hostel_id: string } }
 ) {
   try {
-    const currentUser: (User & { staff: Staff | null }) | null =
-      await getCurrentUser();
+    const currentUser: User | null = await getCurrentUser();
     const { hostel_id } = await params;
     if (!hostel_id) {
       return new NextResponse("HOSTEL_ID NOT FOUND", { status: 400 });
     }
-    if (!currentUser || !currentUser.staff) {
+    if (!currentUser || currentUser.role === "student") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const currentDate = new Date();

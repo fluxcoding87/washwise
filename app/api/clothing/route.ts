@@ -33,6 +33,7 @@ export async function POST(req: Request) {
           create: {
             total_quantity,
             userId: currentUser.id,
+            room_no: currentUser.room_no,
           },
         },
       },

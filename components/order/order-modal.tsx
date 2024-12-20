@@ -1,6 +1,6 @@
 import { useOrderModal } from "@/hooks/clothing/use-order-modal";
 import { ResponsiveModal } from "../responsive-modal";
-import { OrderItemDescription } from "@/app/(protected)/new-order/_components/order-item-description";
+import { OrderItemDescription } from "@/app/(protected)/student/new-order/_components/order-item-description";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { useClothingItemsStore } from "@/hooks/clothing/clothingItems/use-clothing-items-store";

@@ -35,6 +35,6 @@ export default withAuth(function middleware(req) {
 export const config = {
   matcher: [
     // Protect all routes except these:
-    "/((?!sign-in|sign-up|staff-sign-up).*)",
+    "/((?!sign-in|sign-up|staff-sign-up|api).*)",
   ],
 };

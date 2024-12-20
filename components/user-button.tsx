@@ -147,7 +147,7 @@ export const UserButton = ({ user, isLoading }: UserButtonProps) => {
           <Button
             className="p-4 flex items-center justify-center gap-x-2 w-full"
             variant="ghost"
-            onClick={() => signOut()}
+            onClick={() => signOut({ callbackUrl: "/sign-in" })}
           >
             <LogOutIcon className="size-4" />
             <span>Sign Out</span>

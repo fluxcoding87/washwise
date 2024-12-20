@@ -8,8 +8,11 @@ import { useGetLaundriesByHostelId } from "@/hooks/clothing/use-get-laundries-by
 import { HiOutlineRefresh } from "react-icons/hi";
 import { HostelStaffColumns } from "./hostel-staff-columns";
 
+import { useEffect } from "react";
+
 export const HostelStaffClient = ({ hostelId }: { hostelId: string }) => {
   const { data: laundries, isLoading } = useGetLaundriesByHostelId(hostelId);
+
   if (isLoading) {
     return (
       <div className="w-full h-[400px] md:h-[500px] xl:h-[600px] bg-neutral-200 animate-pulse rounded-md" />

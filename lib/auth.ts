@@ -90,4 +90,7 @@ export const authOptions: AuthOptions = {
       return baseUrl;
     },
   },
+  pages: {
+    signIn: "/sign-in",
+  },
 };

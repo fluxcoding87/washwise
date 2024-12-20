@@ -1,3 +1,20 @@
-import { Hostel, Laundry, User } from "@prisma/client";
+import {
+  Clothes,
+  ClothesClothingItem,
+  ClothingItem,
+  Hostel,
+  Laundry,
+  User,
+} from "@prisma/client";
 
 export type FullLaundry = Laundry & { user: User };
+
+export type LaundryWithClothes = Laundry & {
+  clothes: Clothes & {
+    clothingItems: (ClothesClothingItem & { clothingItem: ClothingItem })[];
+  };
+};
+
+export type FullClothingItems = ClothesClothingItem & {
+  clothingItem: ClothingItem;
+};

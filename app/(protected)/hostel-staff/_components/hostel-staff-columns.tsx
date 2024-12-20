@@ -1,19 +1,9 @@
 "use client";
 
 import { CellAction } from "@/components/cell-action";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
 import { FullLaundry } from "@/types/clothing";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { ExternalLink, MoreHorizontal, Trash } from "lucide-react";
 
 export const HostelStaffColumns: ColumnDef<FullLaundry>[] = [
   {
@@ -31,7 +21,6 @@ export const HostelStaffColumns: ColumnDef<FullLaundry>[] = [
       return (
         <div className="font-medium flex flex-col md:flex-row md:items-center md:gap-x-2 md:w-fit w-[130px]">
           <span>{displayDate}</span>
-          {/* <span>{time}</span> */}
         </div>
       );
     },
@@ -46,7 +35,13 @@ export const HostelStaffColumns: ColumnDef<FullLaundry>[] = [
   {
     id: "id",
     cell: ({ row }) => {
-      return <CellAction id={row.original.id} />;
+      return (
+        <CellAction
+          id={row.original.id}
+          roomNo={row.original.user.room_no!}
+          placedOn={row.original.createdAt}
+        />
+      );
     },
   },
 ];

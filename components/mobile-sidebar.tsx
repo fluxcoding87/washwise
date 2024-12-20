@@ -106,7 +106,7 @@ export const MobileSidebar = ({ user, isLoading }: MobileSidebarProps) => {
               href="/issue"
             />
             <div
-              onClick={() => signOut()}
+              onClick={() => signOut({ callbackUrl: "/sign-in" })}
               className="flex items-center p-2 gap-x-4 border rounded-md font-semibold transition hover:text-primary"
             >
               <LogOutIcon className="size-5" />

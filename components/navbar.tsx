@@ -13,10 +13,18 @@ export const Navbar = ({ user }: { user: FullUser }) => {
     <div className="hidden md:flex px-4 py-3 items-center gap-x-8 rounded-2xl border bg-white">
       {student && (
         <>
-          <NavItem icon={HomeIcon} title="Home" href="/" />
-          <NavItem icon={Package} title="New Order" href="/new-order" />
-          <NavItem icon={CalendarCheck2} title="Pickups" href="/pickups" />
-          <NavItem icon={HelpCircle} title="Raise an Issue" href="/issue" />
+          <NavItem icon={HomeIcon} title="Home" href="/student" />
+          <NavItem icon={Package} title="New Order" href="/student/new-order" />
+          <NavItem
+            icon={CalendarCheck2}
+            title="Pickups"
+            href="/student/pickups"
+          />
+          <NavItem
+            icon={HelpCircle}
+            title="Raise an Issue"
+            href="/student/issue"
+          />
         </>
       )}
       {hostelOnlyAccess && (

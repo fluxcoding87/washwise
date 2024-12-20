@@ -3,14 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGetClothingItems } from "@/hooks/clothing/clothingItems/use-get-clothing-items";
 
-import { format } from "date-fns";
-import {
-  CheckCircle2,
-  ClockIcon,
-  Package,
-  Loader2,
-  TrashIcon,
-} from "lucide-react";
+import { CheckCircle2, Package, Loader2, TrashIcon } from "lucide-react";
 import { FaCloud, FaCut, FaGraduationCap, FaTshirt } from "react-icons/fa";
 import { AiOutlineLayout } from "react-icons/ai";
 import {
@@ -19,7 +12,6 @@ import {
   GiNecklaceDisplay,
   GiRolledCloth,
   GiShorts,
-  GiTShirt,
   GiWinterGloves,
   GiWinterHat,
 } from "react-icons/gi";
@@ -114,14 +106,6 @@ export const OrderPageClient = () => {
   if (!clothingItems) {
     return null;
   }
-  // if (orderPending) {
-  //   return (
-  //     <div className="w-full h-[380px] md:h-[500px] flex flex-col items-center justify-center gap-y-4">
-  //       <span className="text-lg md:text-xl font-bold">Placing New Order</span>
-  //       <Loader2 className="size-4 md:size-6 animate-spin" />
-  //     </div>
-  //   );
-  // }
   return (
     <Card className="shadow-none border-none">
       <ConfirmationDialog />

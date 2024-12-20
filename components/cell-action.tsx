@@ -12,10 +12,13 @@ import { useRouter } from "next/navigation";
 
 interface CellActionProps {
   id: string;
+  roomNo: string;
+  placedOn: Date;
 }
 
-export const CellAction = ({ id }: CellActionProps) => {
+export const CellAction = ({ id, roomNo, placedOn }: CellActionProps) => {
   const router = useRouter();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -28,7 +31,9 @@ export const CellAction = ({ id }: CellActionProps) => {
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuItem
           className="cursor-pointer"
-          onClick={() => router.push(`/laundry/${id}`)}
+          onClick={() => {
+            router.push(`/hostel-staff/laundry/${id}`);
+          }}
         >
           <ExternalLink className="size-4 mr-2" />
           View Details

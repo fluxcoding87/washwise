@@ -34,7 +34,8 @@ model Laundry{
   id String @id @default(uuid())
   total_quantity Int
   confirmed_time DateTime?
-  
+  room_no String?
+
   cloth_id String 
   clothes Clothes @relation(fields: [cloth_id],references: [id])
   
