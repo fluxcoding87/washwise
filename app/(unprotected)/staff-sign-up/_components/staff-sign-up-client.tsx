@@ -65,6 +65,7 @@ export const StaffSignUpClient = () => {
       mobile_number: "",
       hostel_id: "",
       role: "",
+      orgId: "",
       group: "",
     },
   });
@@ -188,8 +189,10 @@ export const StaffSignUpClient = () => {
                           <SelectValue placeholder="Select a Role" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="hostel">Hostel Access</SelectItem>
-                          <SelectItem value="both">
+                          <SelectItem value="hostelStaff">
+                            Hostel Access
+                          </SelectItem>
+                          <SelectItem value="plantStaff">
                             Hostel & Plant Access
                           </SelectItem>
                         </SelectContent>
@@ -206,9 +209,10 @@ export const StaffSignUpClient = () => {
                   <FormItem>
                     <FormLabel className="flex items-center gap-x-1">
                       Group
-                      {role === "hostel" && (!selectedHostel || !group) && (
-                        <span className="text-red-500">*</span>
-                      )}
+                      {role === "hostelStaff" &&
+                        (!selectedHostel || !group) && (
+                          <span className="text-red-500">*</span>
+                        )}
                     </FormLabel>
                     <FormControl>
                       <Select
@@ -289,7 +293,7 @@ export const StaffSignUpClient = () => {
                     <FormItem>
                       <FormLabel className="flex items-center gap-x-1">
                         Hostel
-                        {role === "hostel" && !selectedHostel && (
+                        {role === "hostelStaff" && !selectedHostel && (
                           <span className="text-red-500">*</span>
                         )}
                       </FormLabel>
@@ -325,7 +329,7 @@ export const StaffSignUpClient = () => {
                 />
               </div>
             )}
-            {role === "hostel" && (!selectedHostel || !group) && (
+            {role === "hostelStaff" && (!selectedHostel || !group) && (
               <div className="text-red-600 text-sm font-semibold text-center">
                 {`Select a ${!selectedHostel ? "Hostel" : ""} ${
                   !selectedHostel && !group ? "&" : ""
@@ -335,7 +339,8 @@ export const StaffSignUpClient = () => {
             <Button
               className="font-semibold"
               disabled={
-                isPending || (role === "hostel" && (!selectedHostel || !group))
+                isPending ||
+                (role === "hostelStaff" && (!selectedHostel || !group))
               }
             >
               Sign Up

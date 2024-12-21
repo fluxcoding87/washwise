@@ -10,6 +10,7 @@ import { columns } from "./columns";
 import { format } from "date-fns";
 import { HiOutlineClipboardCheck } from "react-icons/hi";
 import { MdRoom } from "react-icons/md";
+import { CustomCardWithHeader } from "@/components/custom-card-with-header";
 
 interface LaundryIdPageClientProps {
   id: string;
@@ -26,51 +27,35 @@ export const LaundryIdPageClient = ({ id }: LaundryIdPageClientProps) => {
     return null;
   }
   return (
-    <Card className="shadow-none border-none">
-      <CardHeader className="p-0 py-4 md:p-6">
-        <CardTitle className="flex flex-col-reverse gap-y-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center justify-center md:justify-start gap-x-2 px-4">
-            <BiBasket className="size-5 md:size-6" />
-            <span className="text-lg md:text-xl">Laundry Order</span>
+    <CustomCardWithHeader icon={BiBasket} title="Laundry Order">
+      <div className="flex flex-col sm:flex-row items-center justify-between py-4 text-base gap-y-4">
+        <div className="flex items-center gap-x-1 ring-1 ring-primary px-2 py-4 rounded-xl">
+          <div className="flex items-center gap-x-2 font-semibold">
+            <HiOutlineClipboardCheck className="size-6 text-primary" />
+            <span>Placed On</span>
           </div>
-          <Separator className="md:hidden" />
-          <div className="flex items-center justify-center">
-            <DayTime />
-          </div>
-        </CardTitle>
-      </CardHeader>
-      <Separator className="bg-gray-300 hidden md:block" />
-      <CardContent>
-        <div className="flex flex-col sm:flex-row items-center justify-between py-4 text-base gap-y-4">
-          <div className="flex items-center gap-x-1 ring-1 ring-primary px-2 py-4 rounded-xl">
-            <div className="flex items-center gap-x-2 font-semibold">
-              <HiOutlineClipboardCheck className="size-6 text-primary" />
-              <span>Placed On</span>
-            </div>
-            <span className="font-semibold">
-              {format(data.createdAt, "EEEE, h:mm a")}
-            </span>
-          </div>
-          <div className="flex items-center gap-x-1 ring-1 ring-primary px-2 py-4 rounded-xl">
-            <div className="flex items-center gap-x-1 font-semibold">
-              <MdRoom className="size-6 text-primary" />
-              <span>Room</span>
-            </div>
-            <span className="font-semibold">{data.room_no}</span>
-          </div>
+          <span className="font-semibold">
+            {format(data.createdAt, "EEEE, h:mm a")}
+          </span>
         </div>
-
-        <div className="">
-          <OrderDataTable
-            id={id}
-            columns={columns}
-            data={data?.clothes.clothingItems}
-            clothesClothingItems={data.clothes.clothingItems}
-            totalQty={data.total_quantity}
-            confirmedAt={data.confirmed_time}
-          />
+        <div className="flex items-center gap-x-1 ring-1 ring-primary px-2 py-4 rounded-xl">
+          <div className="flex items-center gap-x-1 font-semibold">
+            <MdRoom className="size-6 text-primary" />
+            <span>Room</span>
+          </div>
+          <span className="font-semibold">{data.room_no}</span>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+      <div className="">
+        <OrderDataTable
+          id={id}
+          columns={columns}
+          data={data?.clothes.clothingItems}
+          clothesClothingItems={data.clothes.clothingItems}
+          totalQty={data.total_quantity}
+          confirmedAt={data.confirmed_time}
+        />
+      </div>
+    </CustomCardWithHeader>
   );
 };

@@ -31,9 +31,6 @@ export async function GET(
           lte: endOfTheWeek,
         },
       },
-      include: {
-        user: true,
-      },
     });
     return NextResponse.json(laundries);
   } catch (e) {

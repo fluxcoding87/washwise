@@ -14,6 +14,12 @@ export function useGetOrganizations() {
       const { data } = response;
       return data;
     },
+    staleTime: 10 * 60 * 1000,
+    // enabled: !!id,
+    placeholderData: [],
+    retry: 1,
+    refetchOnWindowFocus: false, // Disable refetching when the window regains focus
+    refetchOnReconnect: false, // Disable refetching when reconnecting to the internet
   });
   return query;
 }

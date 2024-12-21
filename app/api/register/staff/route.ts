@@ -26,6 +26,8 @@ export async function POST(req: Request) {
         email,
         hashedPassword,
         mobile_number: mobile_number || null,
+        org_id: orgId,
+        role,
         hostel_id: hostel_id || null,
         staff: {
           create: {

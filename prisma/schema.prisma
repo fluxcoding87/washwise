@@ -19,9 +19,14 @@ model User{
   mobile_number String?
   hostel_id String?
   hostel Hostel? @relation(fields: [hostel_id],references: [id], onDelete: Cascade)
+
+  org_id String?
+  organization Organization? @relation(fields: [org_id],references: [id],onDelete: Cascade)
+
   room_no String?
   floor String?
   staff Staff?
+
 
   laundries Laundry[]
 
@@ -34,6 +39,9 @@ model Laundry{
   id String @id @default(uuid())
   total_quantity Int
   confirmed_time DateTime?
+  plant_confirmed_time DateTime?
+  student_confirmed_time DateTime?
+  
   room_no String?
 
   cloth_id String 
@@ -41,6 +49,9 @@ model Laundry{
   
   userId String
   user User @relation(fields: [userId],references: [id], onDelete: Cascade)
+
+  hostelId String?
+  hostel Hostel? @relation(fields: [hostelId],references: [id],onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -82,18 +93,6 @@ model ClothesClothingItem {
   @@id([clothesId, clothingItemId]) // Composite primary key
 }
 
-model HostelFloorRoom{
-  hostel_id String 
-  floor_id String
-  room_no String
-
-  hostel Hostel @relation(fields: [hostel_id], references: [id], onDelete: Cascade)
-
-  @@id([hostel_id,floor_id,room_no])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
 
 model Staff{
   id String @id @default(uuid())
@@ -122,6 +121,8 @@ model Organization{
 
  hostels Hostel[]
  staffs Staff[]
+ users User[]
+
  createdAt DateTime @default(now())
  updatedAt DateTime @updatedAt
 }
@@ -137,9 +138,10 @@ model Hostel{
   organizationId String
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   staff Staff[]
-  hostel_floor_room HostelFloorRoom[]
+
 
   users User[]
+  laundries Laundry[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

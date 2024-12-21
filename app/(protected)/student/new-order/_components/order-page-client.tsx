@@ -107,83 +107,85 @@ export const OrderPageClient = () => {
     return null;
   }
   return (
-    <Card className="shadow-none border-none">
+    <>
       <ConfirmationDialog />
       <OrderModal
         clothingItems={clothingItems}
         setIsOrderPending={setIsOrderPending}
       />
-      <CardHeader className="sm:p-4 xl:p-6">
-        <CardTitle className=" flex items-center justify-between tracking-wide">
-          <div className="flex items-center gap-x-2 text-lg md:text-xl">
-            <Package className="size-5 md:size-6" />
-            <span>New Order</span>
-          </div>
-          <DayTime />
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="sm:p-4 xl:p-6">
-        <div className="w-full mt-2">
-          <OrderItemAccordian
-            data={topwearClothing}
-            title="Top Wear Clothing"
-            defaultOpen
-          />
-          <OrderItemAccordian
-            data={bottomwearClothing}
-            title="Bottom Wear Clothing"
-            defaultOpen
-          />
-          <OrderItemAccordian data={householdItems} title="Household Items" />
-          <OrderItemAccordian
-            data={outwearClothing}
-            title="Outwear & Accessories"
-          />
-        </div>
-
-        <div
-          className="w-full mt-8 flex flex-col md:flex-row items-center justify-between gap-y-4"
-          style={{ WebkitUserSelect: "none", userSelect: "none" }}
-        >
-          <span className="text-xl font-bold">Order Summary</span>
-          <div className="flex items-center gap-x-4">
-            <Button
-              className="flex items-center hover:bg-[#66BB6A] bg-[#43A047] transition"
-              disabled={items.length === 0 || orderPending}
-              onClick={open}
-            >
-              <CheckCircle2 className="size-4 md:size-6" />
-              {items.length === 0 ? "No Items" : "Continue"}
-            </Button>
-            <Button
-              variant="destructive"
-              className="flex items-center"
-              disabled={items.length === 0 || orderPending}
-              onClick={handleReset}
-            >
-              <TrashIcon className="size-4 md:size-6" />
-              <span>Reset</span>
-            </Button>
-          </div>
-        </div>
-        <DottedSeparator
-          dotSize="4"
-          gapSize="8"
-          className="my-4 bg-neutral-600"
-        />
-        <div className="flex justify-center flex-col gap-y-4 ">
-          {orderPending ? (
-            <div className="w-full h-32 flex items-center justify-center flex-col gap-x-4 backdrop-blur-md">
-              <Loader2 className="size-6 md:size-8 animate-spin" />
-              <span className="text-muted-foreground font-semibold">
-                Placing Order
-              </span>
+      <Card className="shadow-none border-none">
+        <CardHeader className="sm:p-4 xl:p-6">
+          <CardTitle className=" flex items-center justify-between tracking-wide">
+            <div className="flex items-center gap-x-2 text-lg md:text-xl">
+              <Package className="size-5 md:size-6" />
+              <span>New Order</span>
             </div>
-          ) : (
-            <OrderItemDescription />
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            <DayTime />
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="sm:p-4 xl:p-6">
+          <div className="w-full mt-2">
+            <OrderItemAccordian
+              data={topwearClothing}
+              title="Top Wear Clothing"
+              defaultOpen
+            />
+            <OrderItemAccordian
+              data={bottomwearClothing}
+              title="Bottom Wear Clothing"
+              defaultOpen
+            />
+            <OrderItemAccordian data={householdItems} title="Household Items" />
+            <OrderItemAccordian
+              data={outwearClothing}
+              title="Outwear & Accessories"
+            />
+          </div>
+
+          <div
+            className="w-full mt-8 flex flex-col md:flex-row items-center justify-between gap-y-4"
+            style={{ WebkitUserSelect: "none", userSelect: "none" }}
+          >
+            <span className="text-xl font-bold">Order Summary</span>
+            <div className="flex items-center gap-x-4">
+              <Button
+                className="flex items-center hover:bg-[#66BB6A] bg-[#43A047] transition"
+                disabled={items.length === 0 || orderPending}
+                onClick={open}
+              >
+                <CheckCircle2 className="size-4 md:size-6" />
+                {items.length === 0 ? "No Items" : "Continue"}
+              </Button>
+              <Button
+                variant="destructive"
+                className="flex items-center"
+                disabled={items.length === 0 || orderPending}
+                onClick={handleReset}
+              >
+                <TrashIcon className="size-4 md:size-6" />
+                <span>Reset</span>
+              </Button>
+            </div>
+          </div>
+          <DottedSeparator
+            dotSize="4"
+            gapSize="8"
+            className="my-4 bg-neutral-600"
+          />
+          <div className="flex justify-center flex-col gap-y-4 ">
+            {orderPending ? (
+              <div className="w-full h-32 flex items-center justify-center flex-col gap-x-4 backdrop-blur-md">
+                <Loader2 className="size-6 md:size-8 animate-spin" />
+                <span className="text-muted-foreground font-semibold">
+                  Placing Order
+                </span>
+              </div>
+            ) : (
+              <OrderItemDescription />
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 };

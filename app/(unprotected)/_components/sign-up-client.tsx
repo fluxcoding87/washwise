@@ -66,6 +66,7 @@ export const SignUpClient = () => {
       mobile_number: "",
       room_no: "",
       hostel_id: "",
+      role: "student",
       floor: "",
     },
   });

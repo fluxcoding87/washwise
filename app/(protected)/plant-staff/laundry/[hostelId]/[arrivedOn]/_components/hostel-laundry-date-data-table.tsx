@@ -25,16 +25,18 @@ import { Button } from "@/components/ui/button";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
-import CalendarInput from "./ui/date-picker";
+import CalendarInput from "@/components/ui/date-picker";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  setRoomLaundries: (value: string) => void;
 }
 
-export function DataTable<TData, TValue>({
+export function DateDataTable<TData, TValue>({
   columns,
   data,
+  setRoomLaundries,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -59,25 +61,26 @@ export function DataTable<TData, TValue>({
         <Input
           placeholder="Search by room number..."
           value={(table.getColumn("room_no")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("room_no")?.setFilterValue(event.target.value)
-          }
+          onChange={(event) => {
+            setRoomLaundries(event.target.value);
+            table.getColumn("room_no")?.setFilterValue(event.target.value);
+          }}
           className="max-w-sm"
         />
-        <CalendarInput
+        {/* <CalendarInput
           value={dateFilter}
           onChange={(date) => {
             setDateFilter(date);
             // Update the column filter for "createdAt"
             setColumnFilters((prev) => [
-              ...prev.filter((filter) => filter.id !== "createdAt"),
+              ...prev.filter((filter) => filter.id !== "plant_confirmed_time"),
               {
-                id: "createdAt",
+                id: "plant_confirmed_time",
                 value: date ? format(date, "yyyy-MM-dd") : "",
               },
             ]);
           }}
-        />
+        /> */}
       </div>
       <div className="rounded-md border">
         <Table>
@@ -86,7 +89,10 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className={cn("font-extrabold text-gray-700")}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -107,7 +113,7 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                   className={cn(
                     "bg-[#FFCDD2]",
-                    !!row.getValue("confirmed_time") && "bg-[#C8E6C9]"
+                    !!row.getValue("plant_confirmed_time") && "bg-[#C8E6C9]"
                   )}
                 >
                   {row.getVisibleCells().map((cell) => (

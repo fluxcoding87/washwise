@@ -31,6 +31,7 @@ export async function POST(req: Request) {
         },
         laundry: {
           create: {
+            hostelId: currentUser.hostel_id,
             total_quantity,
             userId: currentUser.id,
             room_no: currentUser.room_no,

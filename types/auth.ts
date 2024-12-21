@@ -13,6 +13,7 @@ export const signUpFormSchema = z.object({
   mobile_number: z.string().optional(),
   room_no: z.string().min(1, "Room Number is Required"),
   hostel_id: z.string().min(1, "Hostel is Required"),
+  role: z.string().default("student"),
   floor: z.string().min(1, "Floor is Required"),
 });
 

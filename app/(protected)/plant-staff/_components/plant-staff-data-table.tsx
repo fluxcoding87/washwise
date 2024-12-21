@@ -22,17 +22,17 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
-import CalendarInput from "./ui/date-picker";
+import CalendarInput from "@/components/ui/date-picker";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({
+export function PlantStaffDataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
@@ -48,6 +48,7 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
+
     state: {
       sorting,
       columnFilters,
@@ -57,10 +58,10 @@ export function DataTable<TData, TValue>({
     <div>
       <div className="flex flex-col md:flex-row items-center py-4 gap-x-6 gap-y-4">
         <Input
-          placeholder="Search by room number..."
-          value={(table.getColumn("room_no")?.getFilterValue() as string) ?? ""}
+          placeholder="Search by hostel name..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("room_no")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -70,9 +71,9 @@ export function DataTable<TData, TValue>({
             setDateFilter(date);
             // Update the column filter for "createdAt"
             setColumnFilters((prev) => [
-              ...prev.filter((filter) => filter.id !== "createdAt"),
+              ...prev.filter((filter) => filter.id !== "arrived_on"),
               {
-                id: "createdAt",
+                id: "arrived_on",
                 value: date ? format(date, "yyyy-MM-dd") : "",
               },
             ]);
@@ -86,7 +87,10 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className="font-bold bg-neutral-100 text-gray-600"
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -106,18 +110,27 @@ export function DataTable<TData, TValue>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   className={cn(
-                    "bg-[#FFCDD2]",
-                    !!row.getValue("confirmed_time") && "bg-[#C8E6C9]"
+                    "bg-[#FFCDD2] font-semibold",
+                    !!row.getValue("plant_confirmed_time") && "bg-[#C8E6C9]"
                   )}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        style={{
+                          whiteSpace: "nowrap", // Prevent text from wrapping to the next line
+                          overflow: "hidden", // Hide overflow
+                          textOverflow: "ellipsis", // Optional: Add ellipsis if content overflows
+                        }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (

@@ -6,19 +6,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "./ui/button";
-import { ExternalLink, MoreHorizontal, Trash } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ExternalLink, MoreHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 
 interface CellActionProps {
   id: string;
-  roomNo: string;
-  placedOn: Date;
+  date: string;
 }
 
-export const CellAction = ({ id, roomNo, placedOn }: CellActionProps) => {
-  const { data } = useSession();
+export const CellAction = ({ id, date }: CellActionProps) => {
   const router = useRouter();
 
   return (
@@ -34,19 +31,12 @@ export const CellAction = ({ id, roomNo, placedOn }: CellActionProps) => {
         <DropdownMenuItem
           className="cursor-pointer py-3 px-4 hover:bg-neutral-200 transition"
           onClick={() => {
-            router.push(`/hostel-staff/laundry/${id}`);
+            router.push(`/plant-staff/laundry/${id}/${date}`);
           }}
         >
           <ExternalLink className="size-4 mr-2" />
           View Details
         </DropdownMenuItem>
-        {data?.user.role === "hostelStaff" ||
-          (data?.user.role === "admin" && (
-            <DropdownMenuItem className="text-red-600 hover:text-red-700 py-3 px-4 hover:bg-neutral-200 transition cursor-pointer">
-              <Trash className="size-4 mr-2" />
-              Delete
-            </DropdownMenuItem>
-          ))}
       </DropdownMenuContent>
     </DropdownMenu>
   );

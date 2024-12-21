@@ -3,16 +3,17 @@
 import { CellAction } from "@/components/cell-action";
 import { Button } from "@/components/ui/button";
 import { FullLaundry } from "@/types/clothing";
+import { Laundry } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ArrowUpDown } from "lucide-react";
 
-export const HostelStaffColumns: ColumnDef<FullLaundry>[] = [
+export const HostelStaffColumns: ColumnDef<Laundry>[] = [
   {
-    accessorKey: "user.room_no",
+    accessorKey: "room_no",
     header: "Room",
     cell: ({ row }) => {
-      return <span className="font-semibold">{row.original.user.room_no}</span>;
+      return <span className="font-semibold">{row.original.room_no}</span>;
     },
   },
   {
@@ -66,7 +67,7 @@ export const HostelStaffColumns: ColumnDef<FullLaundry>[] = [
       return (
         <CellAction
           id={row.original.id}
-          roomNo={row.original.user.room_no!}
+          roomNo={row.original.room_no!}
           placedOn={row.original.createdAt}
         />
       );
