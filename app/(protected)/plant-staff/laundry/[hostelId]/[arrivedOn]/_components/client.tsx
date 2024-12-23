@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { CustomCardWithHeader } from "@/components/custom-card-with-header";
@@ -19,6 +18,13 @@ import { ClothingItemWithQty } from "./clothing-item-with-qty";
 import { TotalQtyBadge } from "./total-qty-badge";
 
 import { useGetClothingItems } from "@/hooks/clothing/clothingItems/use-get-clothing-items";
+import { CheckCircle2, Loader2 } from "lucide-react";
+import { ClothingItemsDescription } from "@/app/(protected)/plant-staff/_components/clothing-items-description";
+import { useGetHostels } from "@/hooks/hostel/use-get-hostels";
+import { useConfirm } from "@/hooks/use-confirm";
+import { useConfirmPlantTime } from "@/hooks/plant-staff/use-confirm-plant-staff-time";
+import { cn } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ArrivedOnPageClientProps {
   hostelId: string;
@@ -37,83 +43,70 @@ export const ArrivedOnPageClient = ({
   hostelId,
   arrivedOn,
 }: ArrivedOnPageClientProps) => {
-  const { data: actualClothingItems, isLoading: clothingItemsLoading } =
-    useGetClothingItems();
-  const { data: laundries, isLoading } = useGetAllLaundriesByHostelAndDay(
-    hostelId,
-    arrivedOn
+  const [isLoading, setIsLoading] = useState(false);
+  const [confirmed, setIsConfirmed] = useState(false);
+  const { data: laundries, isLoading: isLaundriesLoading } =
+    useGetAllLaundriesByHostelAndDay(hostelId, arrivedOn);
+  const { data: hostels, isLoading: isHostelsLoading } = useGetHostels();
+  const [hostelName, setHostelName] = useState<string>();
+  const { mutate, isPending } = useConfirmPlantTime();
+  const [ConfirmationDialog, confirm] = useConfirm(
+    `You want to confirm ALL ORDERS of ${hostelName} arrived on ${format(
+      arrivedOn,
+      "dd, MMM yyyy"
+    )}. This action is irreversible!`,
+    ""
   );
+  const queryClient = useQueryClient();
   const [searchedLaundries, setSearchedLaundries] = useState<
     LaundryWithClothes[] | undefined | null
   >(laundries);
   const [roomNumber, setRoomNumber] = useState<string | null>(null);
-  const [individualClothesTotal, setIndividualClothesTotal] = useState<
-    IndividualClothesTotal[]
-  >([]);
-  const [minimumWeight, setMinimumWeight] = useState(0);
-  const [maximumWeight, setMaximumWeight] = useState(0);
   useEffect(() => {
-    if (laundries) {
+    if (laundries && hostels) {
+      const hostelName = hostels.find(
+        (item) => item.id === laundries[0].hostelId
+      )?.name;
+      if (hostelName) {
+        setHostelName(hostelName);
+      }
+      const hasConfirmedTime = laundries.reduce((acc, laundry) => {
+        return acc || laundry.plant_confirmed_time !== null;
+      }, false);
+      setIsConfirmed(hasConfirmedTime);
+
       setSearchedLaundries(laundries);
     }
-  }, [laundries]);
-  useEffect(() => {
-    if (searchedLaundries && !isLoading) {
-      setIndividualClothesTotal((prev) => {
-        const latestValues: IndividualClothesTotal[] = [];
-        searchedLaundries.forEach((laundry) => {
-          laundry.clothes.clothingItems.forEach((item) => {
-            const existingItemIndex = latestValues.findIndex(
-              (value) => value.clothingItemId === item.clothingItemId
-            );
-            if (existingItemIndex === -1) {
-              const clothingItem = actualClothingItems?.find(
-                (val) => val.id === item.clothingItemId
-              );
-              if (clothingItem)
-                latestValues.push({
-                  name: clothingItem.name,
-                  clothingItemId: item.clothingItemId,
-                  total_qty: item.quantity,
-                  min_weight: clothingItem.min_weight_in_grams,
-                  max_weight: clothingItem.max_weight_in_grams!,
-                });
-            } else {
-              latestValues[existingItemIndex].total_qty += item.quantity;
-            }
-          });
-        });
-        const updatedValues = latestValues.map((item) => {
-          const minimum = item.min_weight * item.total_qty;
-          const maximum = item.max_weight! * item.total_qty;
+  }, [laundries, hostels]);
 
-          return {
-            ...item,
-            min_weight: minimum,
-            max_weight: maximum,
-          };
-        });
-        return updatedValues;
-      });
-    }
-  }, [searchedLaundries, isLoading]);
+  // useEffect(() => {
+  //   if (laundries && !isLaundriesLoading) {
+  //     const groupedData: {
+  //       [key: string]: GroupedDataByRoom;
+  //     } = {};
+  //     setIsLoading(true);
+  //     laundries.forEach((laundry) => {
+  //       if (laundry.room_no) {
+  //         const key = `${laundry.room_no}`;
+  //         if (!groupedData[key]) {
+  //           groupedData[key] = {
+  //             room_no: laundry.room_no,
+  //             total_qty: 0,
+  //             laundry_id: laundry.id,
+  //             hostel_confirmed_on: laundry.confirmed_time,
+  //             plant_confirmed_time: laundry.plant_confirmed_time,
+  //           };
+  //         }
+  //         groupedData[key].total_qty += laundry.total_quantity;
+  //       }
+  //     });
+  //     setColumnData(Object.values(groupedData));
+  //     setIsLoading(false);
+  //   }
+  // }, [laundries, isLaundriesLoading]);
 
   useEffect(() => {
-    if (individualClothesTotal.length > 0) {
-      const min = individualClothesTotal.reduce(
-        (acc, curr) => acc + (curr.min_weight || 0),
-        0
-      );
-      const max = individualClothesTotal.reduce(
-        (acc, curr) => acc + (curr.max_weight || 0),
-        0
-      );
-      setMinimumWeight(min / 1000);
-      setMaximumWeight(max / 1000);
-    }
-  }, [individualClothesTotal]);
-
-  useEffect(() => {
+    setIsLoading(true);
     const timeout = setTimeout(() => {
       if (!roomNumber) {
         setSearchedLaundries(laundries);
@@ -123,7 +116,8 @@ export const ArrivedOnPageClient = ({
         );
         setSearchedLaundries(updatedValues);
       }
-    }, 1000);
+      setIsLoading(false);
+    }, 1500);
 
     return () => {
       clearTimeout(timeout);
@@ -132,7 +126,26 @@ export const ArrivedOnPageClient = ({
   const setRoomLaundries = (value: string) => {
     setRoomNumber(value);
   };
-  if (isLoading) {
+  const handleConfirmOrder = async () => {
+    const ok = await confirm();
+    if (!ok) {
+      return;
+    } else {
+      mutate(
+        { hostelId, arrivedOn },
+        {
+          onSuccess: () => {
+            setIsConfirmed(true);
+            queryClient.invalidateQueries({
+              queryKey: [`laundries_${hostelId}_${arrivedOn}`],
+            });
+          },
+        }
+      );
+    }
+  };
+
+  if (isLaundriesLoading) {
     return (
       <div className="w-full h-[400px] sm:h-[500px] md:h-[600px] bg-neutral-200 animate-pulse" />
     );
@@ -144,44 +157,39 @@ export const ArrivedOnPageClient = ({
   return (
     <CustomCardWithHeader
       icon={BiBasket}
-      title={`Laundries on ${format(arrivedOn, "dd MMM, EEEE")}`}
+      title={`Laundries of ${hostelName} on ${format(arrivedOn, "dd MMM")}`}
     >
+      <ConfirmationDialog />
       <DateDataTable
         columns={hostelDateColumns}
         data={laundries}
         setRoomLaundries={setRoomLaundries}
       />
-      <div className="px-2 py-4">
-        <div className="flex flex-col-reverse md:flex-row md:items-end md:justify-between mb-8 border-b border-b-neutral-300 pb-4">
-          <div className="flex items-center gap-x-2 mt-4 md:mt-0">
-            <BiSolidBox className="size-6" />
-            <span className="text-xl font-medium">Total Items in order</span>
-          </div>
-          <div className="flex flex-col md:flex-row md:items-center gap-4">
-            <TotalQtyBadge
-              type="weight"
-              weight={minimumWeight}
-              title="MINIMUM"
-            />
-            <TotalQtyBadge
-              type="weight"
-              weight={maximumWeight}
-              title="MAXIMUM"
-            />
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-          {individualClothesTotal.map((item) => (
-            <ClothingItemWithQty key={item.clothingItemId} item={item} />
-          ))}
-        </div>
-      </div>
+      <ClothingItemsDescription
+        data={searchedLaundries}
+        selectedDate={new Date(arrivedOn)}
+        isLoading={isLoading || isPending}
+      />
       <DottedSeparator
         dotSize="4"
         gapSize="8"
         className="my-4 bg-neutral-600"
       />
-      <div></div>
+      <div className="w-full">
+        <button
+          disabled={isPending || isLoading || confirmed}
+          onClick={handleConfirmOrder}
+          className={cn(
+            "w-full p-4 bg-sky-700 cursor-pointer font-bold text-lg rounded-lg text-white flex items-center justify-center gap-x-4 hover:bg-sky-600 hover:opacity-75 transition",
+            confirmed && "bg-green-600 hover:bg-green-700 hover:opacity-95"
+          )}
+        >
+          <CheckCircle2 />
+          <span>
+            {confirmed ? "Laundries Confirmed" : "Confirm All Orders"}
+          </span>
+        </button>
+      </div>
     </CustomCardWithHeader>
   );
 };

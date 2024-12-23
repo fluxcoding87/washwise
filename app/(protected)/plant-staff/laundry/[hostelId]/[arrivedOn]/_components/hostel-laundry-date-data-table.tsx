@@ -40,7 +40,6 @@ export function DateDataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [dateFilter, setDateFilter] = useState<Date | undefined>();
   const table = useReactTable({
     data,
     columns,
@@ -50,13 +49,14 @@ export function DateDataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    enableColumnResizing: true,
     state: {
       sorting,
       columnFilters,
     },
   });
   return (
-    <div>
+    <div className="overflow-x-auto">
       <div className="flex flex-col md:flex-row items-center py-4 gap-x-6 gap-y-4">
         <Input
           placeholder="Search by room number..."
@@ -65,7 +65,7 @@ export function DateDataTable<TData, TValue>({
             setRoomLaundries(event.target.value);
             table.getColumn("room_no")?.setFilterValue(event.target.value);
           }}
-          className="max-w-sm"
+          className="max-w-sm ml-2"
         />
         {/* <CalendarInput
           value={dateFilter}
@@ -82,7 +82,7 @@ export function DateDataTable<TData, TValue>({
           }}
         /> */}
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border min-w-[500px] overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -139,7 +139,7 @@ export function DateDataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="min-w-[500px] flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
           size="sm"

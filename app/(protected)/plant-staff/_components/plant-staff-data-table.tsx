@@ -87,13 +87,13 @@ export function PlantStaffDataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row items-center md:justify-between py-4 gap-x-6 gap-y-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between py-4 gap-x-6 gap-y-4 mb-4 md:mb-0">
         <div className="flex-1">
           <Select
             defaultValue="None"
             onValueChange={(value) => {
               if (value === "None") {
-                setColumnFilters([]); // Reset filters to show all data
+                setColumnFilters([]);
               } else {
                 setColumnFilters((prev) => [
                   ...prev.filter((filter) => filter.id !== "name"),
@@ -103,7 +103,7 @@ export function PlantStaffDataTable<TData, TValue>({
                   },
                 ]);
               }
-              handleInput(value); // Update hostel name for further logic
+              handleInput(value);
             }}
           >
             <SelectTrigger className="w-full h-12">

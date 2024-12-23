@@ -22,7 +22,7 @@ export const ClothingItemsDescription = ({
   isLoading,
 }: ClothingItemsDescriptionProps) => {
   const [clothingItemsData, setClothingItemsData] = useState<
-    IndividualClothesTotal[]
+    IndividualClothesTotal[] | undefined
   >([]);
   const { data: clothingItems, isLoading: isClothingItemsLoading } =
     useGetClothingItems();
@@ -31,7 +31,7 @@ export const ClothingItemsDescription = ({
   const [totalItems, setTotalItems] = useState(0);
   const today = new Date();
   useEffect(() => {
-    if (data && clothingItems && !isLoading) {
+    if (data && clothingItems && !isLoading && data.length > 0) {
       const itemsData: IndividualClothesTotal[] = [];
       data.forEach((laundry) => {
         if (!laundry) {
@@ -77,27 +77,32 @@ export const ClothingItemsDescription = ({
       });
 
       setClothingItemsData(updatedValues);
+    } else {
+      setClothingItemsData(undefined);
     }
   }, [data, clothingItems, isLoading, selectedDate]);
   useEffect(() => {
-    if (clothingItemsData.length > 0) {
-      const min = clothingItemsData.reduce(
-        (acc, curr) => acc + (curr.min_weight || 0),
-        0
-      );
-      const max = clothingItemsData.reduce(
-        (acc, curr) => acc + (curr.max_weight || 0),
-        0
-      );
-      const total = clothingItemsData.reduce(
-        (acc, curr) => (acc += curr.total_qty),
-        0
-      );
+    if (clothingItemsData) {
+      if (clothingItemsData.length > 0) {
+        const min = clothingItemsData.reduce(
+          (acc, curr) => acc + (curr.min_weight || 0),
+          0
+        );
+        const max = clothingItemsData.reduce(
+          (acc, curr) => acc + (curr.max_weight || 0),
+          0
+        );
+        const total = clothingItemsData.reduce(
+          (acc, curr) => (acc += curr.total_qty),
+          0
+        );
 
-      setTotalItems(total);
-      setMinimumWeight(min / 1000);
-      setMaximumWeight(max / 1000);
+        setTotalItems(total);
+        setMinimumWeight(min / 1000);
+        setMaximumWeight(max / 1000);
+      }
     } else {
+      setTotalItems(0);
       setMinimumWeight(0);
       setMaximumWeight(0);
     }
@@ -109,13 +114,16 @@ export const ClothingItemsDescription = ({
 
   return (
     <div className="px-2 py-4">
-      <div className="flex flex-col-reverse md:flex-row md:items-end md:justify-between mb-8 border-b border-b-neutral-300 pb-4">
-        <div className="flex items-center gap-x-2 mt-4 md:mt-0">
-          <BiSolidBox className="size-6" />
-          <span className="text-xl font-bold">
-            Total Items{" "}
-            {selectedDate.getDay() === today.getDay() ? "Today" : "On"}
-          </span>
+      <div className="flex flex-col-reverse xl:flex-row xl:items-end xl:justify-between mb-8 border-b border-b-neutral-300 pb-4">
+        <div className="flex flex-col md:flex-row items-center gap-x-2 mt-8 xl:mt-0">
+          <div className="flex items-center gap-x-2">
+            <BiSolidBox className="size-6" />
+            <span className="text-xl font-bold">
+              Total Items{" "}
+              {selectedDate.getDay() === today.getDay() ? "Today" : "On"}
+            </span>
+          </div>
+
           <span
             className={cn(
               "text-xl font-bold",
@@ -127,7 +135,7 @@ export const ClothingItemsDescription = ({
               : format(selectedDate, "EEEE, MMM dd")}
           </span>
         </div>
-        <div className="flex flex-col md:flex-row md:items-center gap-4">
+        <div className="flex flex-col sm:items-center xl:flex-row xl:items-center gap-4">
           {isLoading ? (
             <>
               <div className="w-[120px] h-[40px] bg-neutral-500 animate-pulse rounded-lg" />
@@ -161,16 +169,15 @@ export const ClothingItemsDescription = ({
         <div
           className={cn(
             "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4",
-            clothingItemsData &&
-              clothingItemsData.length === 0 &&
-              "flex items-center justify-center size-full"
+            !clothingItemsData &&
+              "flex items-center justify-center size-full text-sm"
           )}
         >
-          {clothingItemsData && clothingItemsData.length === 0
-            ? "No Items."
-            : clothingItemsData.map((item) => (
+          {clothingItemsData
+            ? clothingItemsData?.map((item) => (
                 <ClothingItemWithQty key={item.clothingItemId} item={item} />
-              ))}
+              ))
+            : "No Items."}
         </div>
       )}
     </div>

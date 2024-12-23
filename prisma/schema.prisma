@@ -14,7 +14,7 @@ model User{
   emailVerified DateTime?
   image String?
   hashedPassword String?
-  role String?
+  role String @default("student")
 
   mobile_number String?
   hostel_id String?

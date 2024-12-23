@@ -26,7 +26,7 @@ export async function POST(req: Request) {
         email,
         hashedPassword,
         mobile_number,
-        role,
+        role: "student",
         room_no,
         hostel_id,
         floor,

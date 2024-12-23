@@ -44,7 +44,9 @@ export const useConfirm = (
         <Card className="size-full border-none shadow-none">
           <CardContent className="pt-8">
             <CardHeader>
-              <CardTitle>{title}</CardTitle>
+              <CardTitle className="tracking-wide leading-normal text-lg">
+                {title}
+              </CardTitle>
               <CardDescription>{message}</CardDescription>
             </CardHeader>
             <div className="pt-4 w-full flex flex-col gap-y-2 lg:flex-row gap-x-2 items-center justify-end">

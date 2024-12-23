@@ -63,3 +63,41 @@ export async function GET(req: Request) {
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
+
+export async function PATCH(req: Request) {
+  try {
+    const session = await getSession();
+    const { hostelId, arrivedOn } = await req.json();
+    if (!session) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+    if (session.user.role !== "plantStaff" && session.user.role !== "admin") {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+    if (!hostelId || !arrivedOn) {
+      return new NextResponse("HOSTEL_ID_NOT_FOUND", { status: 400 });
+    }
+    const reqDate = new Date(arrivedOn);
+    const startOfDay = new Date(reqDate);
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date(reqDate);
+    endOfDay.setHours(23, 59, 58, 999);
+    const laundries = await db.laundry.updateMany({
+      where: {
+        hostelId,
+        confirmed_time: {
+          gte: startOfDay,
+          lt: endOfDay,
+        },
+      },
+      data: {
+        plant_confirmed_time: new Date(),
+      },
+    });
+    return NextResponse.json(laundries);
+  } catch (e) {
+    console.log("PLANT_STAFF_LAUNDRIES_POST", e);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
+}
