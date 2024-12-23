@@ -9,13 +9,10 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const hostelId = url.searchParams.get("hostelId");
     const arrivedOn = url.searchParams.get("arrivedOn");
-    // const { hostelId, arrivedOn }: { hostelId: string; arrivedOn: string } =
-    //   await req.json();
-
     if (!session) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
-    if (!hostelId || !arrivedOn) {
+    if (!arrivedOn) {
       return new NextResponse("Missing Fields", { status: 400 });
     }
     if (session.user.role !== "plantStaff" && session.user.role !== "admin") {
@@ -28,21 +25,33 @@ export async function GET(req: Request) {
 
     const endOfDay = new Date(reqDate);
     endOfDay.setHours(23, 59, 58, 999);
-
-    const laundries = await db.laundry.findMany({
-      where: {
+    let whereClause;
+    if (hostelId === "None") {
+      whereClause = {
+        confirmed_time: {
+          gte: startOfDay,
+          lt: endOfDay,
+        },
+      };
+    } else {
+      whereClause = {
         hostelId,
         confirmed_time: {
           gte: startOfDay,
           lt: endOfDay,
         },
-      },
+      };
+    }
+    const laundries = await db.laundry.findMany({
+      where: whereClause,
       include: {
         clothes: {
-          include: {
+          select: {
+            id: true,
             clothingItems: {
-              include: {
-                clothingItem: true,
+              select: {
+                clothingItemId: true,
+                quantity: true,
               },
             },
           },

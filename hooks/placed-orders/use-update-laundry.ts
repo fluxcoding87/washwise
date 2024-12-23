@@ -18,8 +18,12 @@ export const useUpdateLaundry = (id: string) => {
       }
       return response.data;
     },
-    onSuccess: ({ id }) => {
+    onSuccess: ({ id, hostelId }) => {
       queryClient.invalidateQueries({ queryKey: [`laundry_${id}`] });
+      queryClient.invalidateQueries({ queryKey: ["laundry"] });
+      queryClient.invalidateQueries({
+        queryKey: ["hostel_laundries", hostelId],
+      });
       toast.success("Laundry Order Confirmed!");
     },
     onError: () => {

@@ -1,69 +1,98 @@
 "use client";
 
-import { DayTime } from "@/components/day-time";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { useGetAllOrgLaundries } from "@/hooks/organization/use-get-all-org-laundries";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { HiOutlineRefresh } from "react-icons/hi";
+
 import { PlantStaffDataTable } from "./plant-staff-data-table";
 import { columns } from "./columns";
 import { CustomCardWithHeader } from "@/components/custom-card-with-header";
-import { format } from "date-fns";
+
+import { ClothingItemsDescription } from "./clothing-items-description";
+
+import { useGetHostels } from "@/hooks/hostel/use-get-hostels";
+
+import { useGetAllLaundriesByHostelAndDay } from "@/hooks/organization/use-get-all-laundries-by-hostel-and-day";
 
 export type GroupedData = {
   name: string;
   total_qty: number;
   hostel_id: string;
-  arrived_on: string;
+  arrived_on: string | Date;
   plant_confirmed_time: Date | null;
 };
 
 export const PlantStaffPageClient = () => {
-  const { data: staffData, isLoading } = useGetAllOrgLaundries();
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [hostelId, setHostelId] = useState<string>("None");
+
+  const { data: availableLaundries, isLoading: isLaundriesLoading } =
+    useGetAllLaundriesByHostelAndDay(hostelId, selectedDate);
+
+  const { data: hostels, isLoading: isHostelsLoading } = useGetHostels();
+
   const [columnData, setColumnData] = useState<GroupedData[]>([]);
   useEffect(() => {
-    if (!isLoading && staffData) {
-      const groupedData: {
-        [key: string]: GroupedData;
-      } = {};
-      if (staffData)
-        staffData.hostels.forEach((hostel) => {
-          hostel.laundries.forEach((laundry) => {
-            if (laundry.confirmed_time) {
-              const confirmedReal = new Date(laundry.confirmed_time);
-              const confirmedDay = confirmedReal.getDay();
-              const key = `${hostel.name}-${confirmedDay}`;
-
-              if (!groupedData[key]) {
-                groupedData[key] = {
-                  name: hostel.name,
-                  hostel_id: hostel.id,
-                  total_qty: 0,
-                  arrived_on: format(confirmedReal, "yyyy-MM-dd"),
-                  plant_confirmed_time: laundry.plant_confirmed_time,
-                };
-              }
-              groupedData[key].total_qty += laundry.total_quantity;
-            }
-          });
-        });
-      setColumnData(Object.values(groupedData));
+    const groupedData: {
+      [key: string]: GroupedData;
+    } = {};
+    if (availableLaundries && hostels) {
+      availableLaundries.forEach((laundry) => {
+        const hostelName = hostels.find(
+          (item) => item.id === laundry.hostelId
+        )?.name;
+        if (hostelName) {
+          const key = `${hostelName}`;
+          if (!groupedData[key] && laundry.confirmed_time) {
+            groupedData[key] = {
+              name: hostelName,
+              hostel_id: laundry.hostelId!,
+              total_qty: 0,
+              arrived_on: laundry.confirmed_time,
+              plant_confirmed_time: laundry.plant_confirmed_time,
+            };
+          }
+          groupedData[key].total_qty += laundry.total_quantity;
+        }
+      });
     }
-  }, [staffData, isLoading]);
+    setColumnData(Object.values(groupedData));
+  }, [availableLaundries, hostels]);
 
-  if (isLoading) {
+  const handleHostelName = (value: string) => {
+    if (value === "None") {
+      setHostelId("None");
+    } else {
+      const id = hostels?.find((item) => item.name === value)?.id;
+      if (id) {
+        setHostelId(id);
+      }
+    }
+  };
+  const handleSelectedDate = (value: Date | string) => {
+    setSelectedDate(new Date(value));
+  };
+  if (isHostelsLoading) {
     return (
-      <div className="w-full h-[400px] sm:h-[500px] md:h-[600px] bg-neutral-200 animate-pulse rounded-lg" />
+      <div className="w-full h-[400px] sm:h-[500px] md:h-[600px] bg-neutral-500 animate-pulse rounded-lg" />
     );
   }
-  if (!staffData) {
+  if (!hostels) {
     return null;
   }
   return (
     <CustomCardWithHeader title="Recently Arrived Orders">
-      <PlantStaffDataTable data={columnData} columns={columns} />
+      <PlantStaffDataTable
+        data={columnData}
+        columns={columns}
+        hostels={hostels}
+        handleInput={handleHostelName}
+        setSelectedDate={handleSelectedDate}
+        isLoading={isLaundriesLoading}
+      />
+      <ClothingItemsDescription
+        data={availableLaundries}
+        selectedDate={new Date(selectedDate)}
+        isLoading={isLaundriesLoading}
+      />
     </CustomCardWithHeader>
   );
 };

@@ -1,6 +1,7 @@
 import {
   Clothes,
   ClothesClothingItem,
+  ClothingItem,
   Hostel,
   Laundry,
   Organization,
@@ -12,9 +13,13 @@ export type FullOrganization = (Organization & {
   hostels: Hostel[];
 })[];
 
-export type AllLaundryInOrg = Organization & {
-  hostels: (Hostel & { laundries: Laundry[] })[];
-};
+type TClothes = Clothes & { clothingItems: ClothesClothingItem[] };
+
+export type TLaundry = Laundry & { clothes: TClothes };
+
+export type THostel = Hostel & { laundries: TLaundry[] };
+
+export type AllLaundryInOrg = Organization & { hostels: THostel[] };
 
 export type LaundryByHostelAndDate = Laundry & {
   clothes: Clothes & { clothingItems: ClothesClothingItem[] };

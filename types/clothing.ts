@@ -11,7 +11,7 @@ export type FullLaundry = Laundry & { user: User };
 
 export type LaundryWithClothes = Laundry & {
   clothes: Clothes & {
-    clothingItems: (ClothesClothingItem & { clothingItem: ClothingItem })[];
+    clothingItems: ClothesClothingItem[];
   };
 };
 

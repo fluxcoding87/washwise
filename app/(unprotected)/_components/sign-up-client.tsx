@@ -73,7 +73,6 @@ export const SignUpClient = () => {
 
   const onSubmit = (values: z.infer<typeof signUpFormSchema>) => {
     mutate(values);
-    console.log(values);
   };
 
   return (

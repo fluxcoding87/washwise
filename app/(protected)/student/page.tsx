@@ -4,8 +4,6 @@ import { redirect } from "next/navigation";
 
 export default async function StudentPage() {
   const session = await getSession();
-  console.log(session?.user.role);
-
   const role = session?.user.role;
   if (role === "student") {
     return <StudentClient />;

@@ -10,17 +10,18 @@ import axios from "axios";
 
 export function useGetAllLaundriesByHostelAndDay(
   hostelId: string,
-  arrivedOn: string
+  arrivedOn: string | Date
 ) {
   const query = useQuery({
     queryKey: [`laundries_${hostelId}_${arrivedOn}`],
     queryFn: async () => {
+      const arrivedDate = new Date(arrivedOn).toISOString();
       const response = await axios.get<LaundryWithClothes[]>(
         "/api/hostel/laundries",
         {
           params: {
             hostelId,
-            arrivedOn,
+            arrivedOn: arrivedDate,
           },
         }
       );
@@ -30,7 +31,7 @@ export function useGetAllLaundriesByHostelAndDay(
       const { data } = response;
       return data;
     },
-    staleTime: 10 * 60 * 1000,
+    staleTime: 30 * 60 * 1000,
     enabled: !!arrivedOn,
     retry: 1,
     refetchOnWindowFocus: false, // Disable refetching when the window regains focus

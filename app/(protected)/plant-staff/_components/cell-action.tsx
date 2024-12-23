@@ -9,10 +9,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { ExternalLink, MoreHorizontal } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
 interface CellActionProps {
   id: string;
-  date: string;
+  date: Date;
 }
 
 export const CellAction = ({ id, date }: CellActionProps) => {
@@ -31,7 +32,9 @@ export const CellAction = ({ id, date }: CellActionProps) => {
         <DropdownMenuItem
           className="cursor-pointer py-3 px-4 hover:bg-neutral-200 transition"
           onClick={() => {
-            router.push(`/plant-staff/laundry/${id}/${date}`);
+            router.push(
+              `/plant-staff/laundry/${id}/${format(date, "yyyy-MM-dd")}`
+            );
           }}
         >
           <ExternalLink className="size-4 mr-2" />

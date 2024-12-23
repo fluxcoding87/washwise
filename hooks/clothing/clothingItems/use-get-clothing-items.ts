@@ -15,9 +15,8 @@ export function useGetClothingItems() {
       const { data } = response;
       return data;
     },
-    staleTime: 10 * 60 * 1000,
+    staleTime: 2147483647, // Max stale time (~24.8 days)
     // enabled: !!id,
-    placeholderData: [],
     retry: 1,
     refetchOnWindowFocus: false, // Disable refetching when the window regains focus
     refetchOnReconnect: false, // Disable refetching when reconnecting to the internet

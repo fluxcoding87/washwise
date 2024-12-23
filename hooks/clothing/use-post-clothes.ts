@@ -23,6 +23,7 @@ export const usePostClothes = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["laundry"] });
+      queryClient.invalidateQueries({ queryKey: ["laundry"] });
       toast.success("Order Placed Successfully!");
     },
     onError: () => {

@@ -1,8 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Hostel, Laundry } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { GroupedData } from "./client";
 import { format } from "date-fns";
 import { CellAction } from "./cell-action";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
 
 export const columns: ColumnDef<GroupedData>[] = [
   {
@@ -11,6 +14,8 @@ export const columns: ColumnDef<GroupedData>[] = [
   },
   {
     accessorKey: "arrived_on",
+
+    enableSorting: true,
     header: "Arrived On",
     cell: ({ row }) => {
       const date = row.original.arrived_on;
@@ -26,7 +31,17 @@ export const columns: ColumnDef<GroupedData>[] = [
   },
   {
     accessorKey: "plant_confirmed_time",
-    header: "Confirmed",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Confirmed On
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       const confirmedTime = row.original.plant_confirmed_time;
       return (
@@ -44,7 +59,7 @@ export const columns: ColumnDef<GroupedData>[] = [
       return (
         <CellAction
           id={row.original.hostel_id}
-          date={row.original.arrived_on}
+          date={new Date(row.original.arrived_on)}
         />
       );
     },

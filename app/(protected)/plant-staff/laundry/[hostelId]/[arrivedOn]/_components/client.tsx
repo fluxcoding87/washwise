@@ -1,27 +1,31 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { CustomCardWithHeader } from "@/components/custom-card-with-header";
-import { Card } from "@/components/ui/card";
+
 import { useGetAllLaundriesByHostelAndDay } from "@/hooks/organization/use-get-all-laundries-by-hostel-and-day";
 import { format } from "date-fns";
-import { NextResponse } from "next/server";
+
 import { BiBasket, BiSolidBox } from "react-icons/bi";
 import { DateDataTable } from "./hostel-laundry-date-data-table";
 import { hostelDateColumns } from "./columns";
 import { useEffect, useState } from "react";
-import { itemIconMap } from "@/app/(protected)/student/new-order/_components/order-page-client";
-import { GiShirt } from "react-icons/gi";
+
 import { DottedSeparator } from "@/components/dotted-separator";
 import { LaundryWithClothes } from "@/types/clothing";
-import { Separator } from "@/components/ui/separator";
+
+import { ClothingItemWithQty } from "./clothing-item-with-qty";
+import { TotalQtyBadge } from "./total-qty-badge";
+
+import { useGetClothingItems } from "@/hooks/clothing/clothingItems/use-get-clothing-items";
 
 interface ArrivedOnPageClientProps {
   hostelId: string;
-  arrivedOn: string;
+  arrivedOn: string | Date;
 }
 
-type IndividualClothesTotal = {
+export type IndividualClothesTotal = {
   clothingItemId: string;
   total_qty: number;
   name: string;
@@ -33,6 +37,8 @@ export const ArrivedOnPageClient = ({
   hostelId,
   arrivedOn,
 }: ArrivedOnPageClientProps) => {
+  const { data: actualClothingItems, isLoading: clothingItemsLoading } =
+    useGetClothingItems();
   const { data: laundries, isLoading } = useGetAllLaundriesByHostelAndDay(
     hostelId,
     arrivedOn
@@ -55,20 +61,23 @@ export const ArrivedOnPageClient = ({
     if (searchedLaundries && !isLoading) {
       setIndividualClothesTotal((prev) => {
         const latestValues: IndividualClothesTotal[] = [];
-
         searchedLaundries.forEach((laundry) => {
           laundry.clothes.clothingItems.forEach((item) => {
             const existingItemIndex = latestValues.findIndex(
               (value) => value.clothingItemId === item.clothingItemId
             );
             if (existingItemIndex === -1) {
-              latestValues.push({
-                name: item.clothingItem.name,
-                clothingItemId: item.clothingItemId,
-                total_qty: item.quantity,
-                min_weight: item.clothingItem.min_weight_in_grams,
-                max_weight: item.clothingItem.max_weight_in_grams!,
-              });
+              const clothingItem = actualClothingItems?.find(
+                (val) => val.id === item.clothingItemId
+              );
+              if (clothingItem)
+                latestValues.push({
+                  name: clothingItem.name,
+                  clothingItemId: item.clothingItemId,
+                  total_qty: item.quantity,
+                  min_weight: clothingItem.min_weight_in_grams,
+                  max_weight: clothingItem.max_weight_in_grams!,
+                });
             } else {
               latestValues[existingItemIndex].total_qty += item.quantity;
             }
@@ -91,30 +100,24 @@ export const ArrivedOnPageClient = ({
 
   useEffect(() => {
     if (individualClothesTotal.length > 0) {
-      console.log("Individual Clothes Total:", individualClothesTotal); // Debug log for individual clothes total
-
       const min = individualClothesTotal.reduce(
-        (acc, curr) => acc + (curr.min_weight || 0), // Default to 0 if undefined
+        (acc, curr) => acc + (curr.min_weight || 0),
         0
       );
       const max = individualClothesTotal.reduce(
-        (acc, curr) => acc + (curr.max_weight || 0), // Default to 0 if undefined
+        (acc, curr) => acc + (curr.max_weight || 0),
         0
       );
-
-      // Update state for minimum and maximum weight
-      setMinimumWeight(min / 1000); // Convert to kilograms
-      setMaximumWeight(max / 1000); // Convert to kilograms
+      setMinimumWeight(min / 1000);
+      setMaximumWeight(max / 1000);
     }
   }, [individualClothesTotal]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (!roomNumber) {
-        // If no room number is selected, show all laundries
         setSearchedLaundries(laundries);
       } else {
-        // If room number is selected, filter the laundries
         const updatedValues = laundries?.filter(
           (item) => item.room_no === roomNumber
         );
@@ -155,39 +158,22 @@ export const ArrivedOnPageClient = ({
             <span className="text-xl font-medium">Total Items in order</span>
           </div>
           <div className="flex flex-col md:flex-row md:items-center gap-4">
-            <div className="flex items-center ring-1 ring-primary rounded-lg p-2 gap-x-4 justify-between md:justify-start hover:-translate-y-2 transition duration-200 shadow-lg cursor-pointer ">
-              <div className="font-semibold text-sm">MINIMUM</div>
-              <div className="font-bold">{minimumWeight} KG</div>
-            </div>
-            <div className="flex items-center ring-1 ring-primary rounded-lg p-2 gap-x-4 justify-between md:justify-start hover:-translate-y-2 transition duration-200 shadow-lg cursor-pointer ">
-              <div className="text-sm font-semibold">MAXIMUM</div>
-              <div className="text-center font-bold">{maximumWeight} KG</div>
-            </div>
+            <TotalQtyBadge
+              type="weight"
+              weight={minimumWeight}
+              title="MINIMUM"
+            />
+            <TotalQtyBadge
+              type="weight"
+              weight={maximumWeight}
+              title="MAXIMUM"
+            />
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-          {individualClothesTotal.map((item) => {
-            const Icon =
-              itemIconMap.find((val) => item.name === val.name)?.icon ??
-              GiShirt;
-
-            return (
-              <div
-                key={item.clothingItemId}
-                className="flex items-center justify-between rounded-lg group hover:-translate-y-2 transition duration-200 shadow-lg cursor-pointer"
-              >
-                <div className="flex items-center gap-x-2 md:gap-x-4 p-4 flex-1 border border-primary border-r-0 rounded-l-lg">
-                  <Icon className="size-5 md:size-6 text-sky-700" />
-                  <div className="font-semibold text-base text-neutral-800 ">
-                    {item.name}
-                  </div>
-                </div>
-                <div className="flex font-bold text-lg items-center justify-center bg-primary text-white h-[100%] w-[25%] rounded-r-lg border border-primary">
-                  {item.total_qty}
-                </div>
-              </div>
-            );
-          })}
+          {individualClothesTotal.map((item) => (
+            <ClothingItemWithQty key={item.clothingItemId} item={item} />
+          ))}
         </div>
       </div>
       <DottedSeparator
