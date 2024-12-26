@@ -20,7 +20,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${font.className} antialiased bg-neutral-100`}>
+      <body
+        className={`${font.className} antialiased bg-neutral-100`}
+        id="root"
+      >
         <QueryProvider>
           <AuthProvider>
             {children}

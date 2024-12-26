@@ -15,6 +15,4 @@ export type LaundryWithClothes = Laundry & {
   };
 };
 
-export type FullClothingItems = ClothesClothingItem & {
-  clothingItem: ClothingItem;
-};
+export type FullClothingItems = ClothesClothingItem;

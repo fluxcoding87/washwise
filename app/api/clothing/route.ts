@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/actions/getCurrentUser";
+import { getCurrentUser, getSession } from "@/actions/getCurrentUser";
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
 
@@ -47,18 +47,54 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const currentUser = await getCurrentUser();
-    if (!currentUser) {
+    const session = await getSession();
+    if (!session) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
+    const url = new URL(req.url);
+    const type = url.searchParams.get("type");
 
-    const laundries = await db.laundry.findMany({
-      where: {
-        userId: currentUser.id,
-      },
-    });
+    if (!type) {
+      return new NextResponse("TYPE_NOT_FOUND", { status: 400 });
+    }
+    const { user } = session;
+    let laundries;
+    if (type === "newOrder") {
+      laundries = await db.laundry.findMany({
+        where: {
+          userId: user.id,
+          student_confirmed_time: null,
+        },
+        select: {
+          id: true,
+        },
+      });
+    } else if (type === "home") {
+      laundries = await db.laundry.findMany({
+        where: {
+          userId: user.id,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          clothes: {
+            select: {
+              id: true,
+              clothingItems: {
+                select: {
+                  clothingItemId: true,
+                  quantity: true,
+                },
+              },
+            },
+          },
+        },
+        take: 8,
+      });
+    }
 
     return NextResponse.json(laundries);
   } catch (e) {

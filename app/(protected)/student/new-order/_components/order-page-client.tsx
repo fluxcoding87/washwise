@@ -29,6 +29,10 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { OrderModal } from "@/components/order/order-modal";
 import { useOrderModal } from "@/hooks/clothing/use-order-modal";
 import { DayTime } from "@/components/day-time";
+import { useGetLaundries } from "@/hooks/clothing/use-get-laundries";
+import { CustomCardWithHeader } from "@/components/custom-card-with-header";
+import Lottie from "lottie-react";
+import { NotFoundPage } from "./not-found-page";
 
 export const itemIconMap = [
   { name: "Blanket", icon: FaCloud },
@@ -51,16 +55,18 @@ export const itemIconMap = [
 ];
 
 export const OrderPageClient = () => {
+  const { data: notConfirmedLaundries, isLoading: isLaundriesLoading } =
+    useGetLaundries("newOrder");
   const [orderPending, setOrderPending] = useState<boolean>();
   const setIsOrderPending = useCallback((val: boolean) => {
     setOrderPending(val);
   }, []);
 
   const { open } = useOrderModal();
-  const { data: clothingItems, isLoading } = useGetClothingItems();
+  const { data: clothingItems, isLoading: isClothingItemsLoading } =
+    useGetClothingItems();
   const { reset, items } = useClothingItemsStore();
-
-  const currentDate = new Date();
+  const isLoading = isLaundriesLoading || isClothingItemsLoading;
   const [ConfirmationDialog, confirm] = useConfirm(
     "Are you sure?",
     "This action will reset the items you just added and cannot be undone."
@@ -97,7 +103,6 @@ export const OrderPageClient = () => {
       reset();
     }
   };
-
   if (isLoading) {
     return (
       <div className="w-full h-96 bg-neutral-200 animate-pulse rounded-lg" />
@@ -106,6 +111,11 @@ export const OrderPageClient = () => {
   if (!clothingItems) {
     return null;
   }
+  if (!notConfirmedLaundries) {
+    return null;
+  }
+  console.log(notConfirmedLaundries);
+
   return (
     <>
       <ConfirmationDialog />
@@ -113,17 +123,12 @@ export const OrderPageClient = () => {
         clothingItems={clothingItems}
         setIsOrderPending={setIsOrderPending}
       />
-      <Card className="shadow-none border-none">
-        <CardHeader className="sm:p-4 xl:p-6">
-          <CardTitle className=" flex items-center justify-between tracking-wide">
-            <div className="flex items-center gap-x-2 text-lg md:text-xl">
-              <Package className="size-5 md:size-6" />
-              <span>New Order</span>
-            </div>
-            <DayTime />
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="sm:p-4 xl:p-6">
+      {notConfirmedLaundries.length !== 0 ? (
+        <CustomCardWithHeader title="New Order" icon={Package}>
+          <NotFoundPage />
+        </CustomCardWithHeader>
+      ) : (
+        <CustomCardWithHeader title="New Order" icon={Package}>
           <div className="w-full mt-2">
             <OrderItemAccordian
               data={topwearClothing}
@@ -184,8 +189,8 @@ export const OrderPageClient = () => {
               <OrderItemDescription />
             )}
           </div>
-        </CardContent>
-      </Card>
+        </CustomCardWithHeader>
+      )}
     </>
   );
 };

@@ -31,11 +31,6 @@ export const Navbar = ({ user }: { user: FullUser }) => {
         <>
           <NavItem icon={HomeIcon} title="Home" href="/hostel-staff" />
           <NavItem
-            icon={MdHistory}
-            title="History"
-            href="/hostel-staff/history"
-          />
-          <NavItem
             icon={CalendarCheck2}
             title="Pickups"
             href="/hostel-staff/pickups"
@@ -51,11 +46,11 @@ export const Navbar = ({ user }: { user: FullUser }) => {
       {plantAndHostelAccess && (
         <>
           <NavItem icon={HomeIcon} title="Home" href="/plant-staff" />
-          <NavItem
+          {/* <NavItem
             icon={MdHistory}
             title="History"
             href="/plant-staff/history"
-          />
+          /> */}
           <NavItem
             icon={CalendarCheck2}
             title="Pickups"

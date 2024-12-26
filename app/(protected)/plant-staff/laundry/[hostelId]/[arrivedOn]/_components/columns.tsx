@@ -70,6 +70,7 @@ export const hostelDateColumns: ColumnDef<LaundryWithClothes>[] = [
         id={row.original.id}
         roomNo={row.original.room_no!}
         placedOn={row.original.createdAt!}
+        type="plantStaff"
       />
     ),
   },

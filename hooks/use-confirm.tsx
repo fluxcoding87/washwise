@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const useConfirm = (
   title: string,
@@ -37,7 +37,20 @@ export const useConfirm = (
     promise?.resolve(false);
     handleClose();
   };
+  useEffect(() => {
+    if (promise !== null) {
+      // Modal is open, disable pointer events on the body
+      document.body.style.pointerEvents = "none";
+    } else {
+      // Modal is closed, re-enable pointer events
+      document.body.style.pointerEvents = "auto";
+    }
 
+    return () => {
+      // Cleanup when component unmounts
+      document.body.style.pointerEvents = "auto";
+    };
+  }, [promise]);
   const ConfirmationDialog = () => {
     return (
       <ResponsiveModal open={promise !== null} onOpenChange={handleClose}>

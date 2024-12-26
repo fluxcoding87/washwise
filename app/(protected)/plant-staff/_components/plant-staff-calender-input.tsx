@@ -40,7 +40,7 @@ const PlantStaffCalendarInput: React.FC<PlantStaffCalendarInputProps> = ({
             }
             setIsOpen(false); // Close the popover
           }}
-          disabled={(date) => date > new Date() || date < startOfTheWeek} // Disable future and past dates
+          disabled={(date) => date > new Date()} // Disable future and past dates
           initialFocus
         />
       </PopoverContent>

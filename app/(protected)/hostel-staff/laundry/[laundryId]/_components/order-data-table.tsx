@@ -48,16 +48,16 @@ import { useAddItem } from "@/hooks/placed-orders/use-add-item";
 import { AddItemModal } from "./add-item-modal";
 import { cn } from "@/lib/utils";
 import { useUpdateLaundry } from "@/hooks/placed-orders/use-update-laundry";
+import { useSearchParams } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   totalQty: number;
-  clothesClothingItems: (ClothesClothingItem & {
-    clothingItem: ClothingItem;
-  })[];
+  clothesClothingItems: ClothesClothingItem[];
   id: string;
   confirmedAt: Date | null;
+  plant_confirmed_time: Date | null;
 }
 
 export const editClothesClothingItemSchema = z.object({
@@ -76,7 +76,11 @@ export function OrderDataTable<TData, TValue>({
   totalQty,
   clothesClothingItems,
   confirmedAt,
+  plant_confirmed_time,
 }: DataTableProps<TData, TValue>) {
+  const searchParams = useSearchParams();
+
+  const [type, setType] = useState<string>("hostelStaff");
   const [tableData, setTableData] = useState(data);
   const table = useReactTable({
     data: tableData,
@@ -127,7 +131,12 @@ export function OrderDataTable<TData, TValue>({
       isEditing: boolean;
     }[]
   >([]);
-
+  useEffect(() => {
+    const type = searchParams.get("type");
+    if (type) {
+      setType(type);
+    }
+  }, [searchParams]);
   useEffect(() => {
     setSelectedQuantites((prev) => {
       let updatedValue = [...prev];
@@ -176,31 +185,6 @@ export function OrderDataTable<TData, TValue>({
       clearTimeout(timeout);
     };
   }, [selectedQuantites]);
-  useEffect(() => {
-    const timeOut = setTimeout(() => {
-      setModifiedRows((prev) => {
-        const updatedValues = tableData.map((item, idx) => {
-          // @ts-ignore
-          if (item.clothingItemId !== item.clothingItem.id) {
-            return {
-              id: idx.toString(),
-              value: true,
-            };
-          } else {
-            return {
-              id: idx.toString(),
-              value: false,
-            };
-          }
-        });
-        return updatedValues;
-      });
-    }, 500);
-    return () => {
-      clearTimeout(timeOut);
-    };
-  }, [tableData]);
-  // console.log(tableData);
 
   if (isItemsLoading) {
     return <div className="w-full h-96 animate-pulse bg-neutral-200" />;
@@ -295,6 +279,7 @@ export function OrderDataTable<TData, TValue>({
       return;
     }
     mutate(values);
+    // console.log(values);
   };
   const updateTableData = (doubleClickedRow: string) => {
     setTableData((prev) => {
@@ -325,13 +310,23 @@ export function OrderDataTable<TData, TValue>({
         ...prev.map((item) => ({ ...item, isEditing: false })),
       ]);
       updateTableData(doubleClickedRow);
+      setModifiedRows((prev) => {
+        const latestValues = [...prev];
+        const existingItemIndex = latestValues.findIndex(
+          (item) => item.id === doubleClickedRow
+        );
+        if (existingItemIndex !== -1) {
+          latestValues[existingItemIndex].value = true;
+        }
+        return latestValues;
+      });
     }
   };
   const handleDelete = async (row: Row<TData>) => {
     const ok = await confirm();
     if (!ok) {
       return;
-    } else if (selectedItems.length <= 1) {
+    } else if (selectedItems.length <= 1 && type === "plantStaff") {
       toast.error("Cannot delete only left item!");
     } else {
       if (doubleClickedRow) {
@@ -367,43 +362,66 @@ export function OrderDataTable<TData, TValue>({
 
           return updatedValues;
         });
+        setModifiedRows((prev) => {
+          const latestValues = [...prev];
+          const updatedValues = latestValues.filter(
+            (item) => item.id !== row.id
+          );
+          return updatedValues.map((item, idx) => ({
+            ...item,
+            id: idx.toString(),
+          }));
+        });
       }
       remove(+row.id);
     }
   };
+
   const handleAddRow = (clothingItemId: string, qty: string) => {
-    setTableData((prev) => {
-      const latestValues = [...prev];
-      const updatedValues = [];
-      for (let i = 0; i < selectedItems.length; i++) {
-        updatedValues.push({ ...latestValues[i] });
-        if (i === selectedItems.length - 1) {
-          updatedValues.push({
-            ...latestValues[i - 1],
-            clothingItemId,
-            quantity: +qty,
-          });
+    if (selectedItems.length >= 1) {
+      setTableData((prev) => {
+        const latestValues = [...prev];
+        const updatedValues = [];
+
+        for (let i = 0; i < selectedItems.length; i++) {
+          updatedValues.push({ ...latestValues[i] });
+          if (i === selectedItems.length - 1) {
+            updatedValues.push({
+              ...latestValues[i - 1],
+              clothingItemId,
+              quantity: +qty,
+            });
+          }
         }
-      }
-      return updatedValues;
-    });
-    setSelectedItems((prev) => {
-      const name = actualClothingItems?.find(
-        (item) => item.id === clothingItemId
-      )?.name;
-      const latestValues = [...prev];
-      latestValues.push({ clothingItemId, name: name! });
-      return latestValues;
-    });
-    setSelectedQuantites((prev) => {
-      const latestValues = [...prev];
-      const id = latestValues.length.toString();
-      latestValues.push({ id, qty });
-      return latestValues;
-    });
-    append({ clothingItemId, quantity: qty });
-    close();
+        return updatedValues;
+      });
+      setSelectedItems((prev) => {
+        const name = actualClothingItems?.find(
+          (item) => item.id === clothingItemId
+        )?.name;
+        const latestValues = [...prev];
+        latestValues.push({ clothingItemId, name: name! });
+        return latestValues;
+      });
+      setSelectedQuantites((prev) => {
+        const latestValues = [...prev];
+        const id = latestValues.length.toString();
+        latestValues.push({ id, qty });
+        return latestValues;
+      });
+      setModifiedRows((prev) => {
+        const latestValues = [...prev];
+        latestValues.push({ id: tableData.length.toString(), value: true });
+        return latestValues;
+      });
+      append({ clothingItemId, quantity: qty });
+      close();
+    } else {
+      close();
+      return;
+    }
   };
+  // console.log(selectedQuantites);
 
   return (
     <div className="rounded-md">
@@ -437,7 +455,12 @@ export function OrderDataTable<TData, TValue>({
                           className="font-extrabold bg-[#E0F7FA]"
                           variant="outline"
                           onClick={open}
-                          disabled={isPending || !!confirmedAt}
+                          disabled={
+                            isPending ||
+                            (!!confirmedAt && type === "hostelStaff") ||
+                            (!!plant_confirmed_time && type === "plantStaff") ||
+                            selectedItems.length === 0
+                          }
                         >
                           <PlusIcon className="font-extrabold text-black" />
                         </Button>
@@ -473,7 +496,12 @@ export function OrderDataTable<TData, TValue>({
                     "cursor-pointer",
                     modifiedRows.find((item) => item.id === row.id)?.value &&
                       "bg-[#FFE0B2]",
-                    confirmedAt && "pointer-events-none"
+                    confirmedAt &&
+                      type === "hostelStaff" &&
+                      "pointer-events-none",
+                    plant_confirmed_time &&
+                      type === "plantStaff" &&
+                      "pointer-events-none"
                   )}
                   onDoubleClick={() => handleDoubleClick(row)}
                   onClick={() => handleClick(row)}
@@ -640,10 +668,15 @@ export function OrderDataTable<TData, TValue>({
         </TableFooter>
       </Table>
 
-      {confirmedAt ? (
+      {(plant_confirmed_time && type === "plantStaff") ||
+      (confirmedAt && type === "hostelStaff") ? (
         <div className="mt-4 rounded-md flex items-center justify-center py-6 bg-green-600 text-white font-bold gap-x-2 text-lg">
           <CheckCircle className="size-5" />
-          <span>Order Confirmed by Hostel Staff</span>
+          <span>
+            {type === "hostelStaff"
+              ? "Approved by Hostel Staff"
+              : "Approved by Plant Staff"}
+          </span>
         </div>
       ) : (
         <div className="py-8 px-2 flex items-center">

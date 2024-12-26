@@ -2,7 +2,6 @@
 
 import { CellAction } from "@/components/cell-action";
 import { Button } from "@/components/ui/button";
-import { FullLaundry } from "@/types/clothing";
 import { Laundry } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -69,6 +68,8 @@ export const HostelStaffColumns: ColumnDef<Laundry>[] = [
           id={row.original.id}
           roomNo={row.original.room_no!}
           placedOn={row.original.createdAt}
+          laundryId={row.original.id}
+          type="hostelStaff"
         />
       );
     },

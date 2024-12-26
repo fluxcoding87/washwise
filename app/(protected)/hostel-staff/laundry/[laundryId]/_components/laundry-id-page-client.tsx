@@ -35,7 +35,7 @@ export const LaundryIdPageClient = ({ id }: LaundryIdPageClientProps) => {
             <span>Placed On</span>
           </div>
           <span className="font-semibold">
-            {format(data.createdAt, "EEEE, h:mm a")}
+            {format(data.createdAt, "dd MMM, EEEE h:mm a")}
           </span>
         </div>
         <div className="flex items-center gap-x-1 ring-1 ring-primary px-2 py-4 rounded-xl">
@@ -54,6 +54,7 @@ export const LaundryIdPageClient = ({ id }: LaundryIdPageClientProps) => {
           clothesClothingItems={data.clothes.clothingItems}
           totalQty={data.total_quantity}
           confirmedAt={data.confirmed_time}
+          plant_confirmed_time={data.plant_confirmed_time}
         />
       </div>
     </CustomCardWithHeader>

@@ -23,7 +23,7 @@ export const NavClient = () => {
   }
 
   if (!user) {
-    return null; // Return null while the redirection happens
+    return null;
   }
 
   return (

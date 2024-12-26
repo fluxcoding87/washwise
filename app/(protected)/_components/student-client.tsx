@@ -1,19 +1,26 @@
 "use client";
-import { DayTime } from "@/components/day-time";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { useGetLaundries } from "@/hooks/clothing/use-get-laundries";
 import Image from "next/image";
 import { HiOutlineRefresh } from "react-icons/hi";
 import { LaundryOrderItemCard } from "./laundry-order-item-card";
 import { CustomCardWithHeader } from "@/components/custom-card-with-header";
+import { useEffect, useState } from "react";
+import { OrderItemModal } from "./order-item-modal";
+import { useViewItemDetails } from "@/hooks/placed-orders/use-view-item-details";
 
 export const StudentClient = () => {
-  const { data: laundries, isLoading } = useGetLaundries();
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  const { data: laundries, isLoading } = useGetLaundries("home");
   if (isLoading) {
     return (
       <div className="w-full rounded-lg h-[400px] md:h-[600px] bg-neutral-300 animate-pulse" />
     );
+  }
+  if (!isClient) {
+    return null;
   }
   return (
     <CustomCardWithHeader icon={HiOutlineRefresh} title="Your Recent Orders">
@@ -32,7 +39,9 @@ export const StudentClient = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 md:px-4 py-6">
           {laundries.map((item) => (
-            <LaundryOrderItemCard key={item.id} data={item} />
+            <div key={item.id}>
+              <LaundryOrderItemCard data={item} />
+            </div>
           ))}
         </div>
       )}

@@ -1,10 +1,12 @@
 import { editClothesClothingItemSchema } from "@/app/(protected)/hostel-staff/laundry/[laundryId]/_components/order-data-table";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
 
 export const useUpdateLaundry = (id: string) => {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async ({
@@ -24,6 +26,7 @@ export const useUpdateLaundry = (id: string) => {
       queryClient.invalidateQueries({
         queryKey: ["hostel_laundries", hostelId],
       });
+      router.push("/");
       toast.success("Laundry Order Confirmed!");
     },
     onError: () => {

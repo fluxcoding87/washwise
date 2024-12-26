@@ -1,21 +1,25 @@
+import { LaundryWithClothes } from "@/types/clothing";
 import { Laundry } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export function useGetLaundries() {
+export function useGetLaundries(type: string) {
   const query = useQuery({
-    queryKey: ["laundry"],
+    queryKey: ["laundry", type],
     queryFn: async () => {
-      const response = await axios.get<Laundry[]>("/api/clothing");
+      const response = await axios.get<LaundryWithClothes[]>("/api/clothing", {
+        params: {
+          type,
+        },
+      });
       if (!response.data) {
         return null;
       }
       const { data } = response;
       return data;
     },
-    staleTime: 10 * 60 * 1000,
-
-    placeholderData: [],
+    staleTime: 20 * 60 * 1000,
+    enabled: !!type,
     retry: 1,
     refetchOnWindowFocus: false, // Disable refetching when the window regains focus
     refetchOnReconnect: false, // Disable refetching when reconnecting to the internet
