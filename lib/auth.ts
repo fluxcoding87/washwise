@@ -75,6 +75,12 @@ export const authOptions: AuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
+    async signIn({ user, account, profile, email, credentials }) {
+      if (!user) {
+        return "/sign-in";
+      }
+      return true;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;

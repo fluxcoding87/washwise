@@ -10,19 +10,19 @@ import { Input } from "@/components/ui/input";
 import { CalendarIcon } from "lucide-react";
 
 interface CalendarInputProps {
-  value: Date | undefined;
-  onChange: (date: Date | undefined) => void;
+  value: Date;
+  onChange: (date: Date) => void;
 }
 
 const CalendarInput: React.FC<CalendarInputProps> = ({ value, onChange }) => {
-  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
+  const [selectedDate, setSelectedDate] = React.useState<Date>(value);
   const [isOpen, setIsOpen] = React.useState(false);
   const past30Days = new Date();
   past30Days.setDate(past30Days.getDate() - 30);
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <div className="font-medium text-sm flex w-full md:w-[30%] items-center gap-x-2 border h-10 rounded-md cursor-pointer hover:ring-1 hover:ring-primary px-4 transition">
+        <div className="font-medium text-sm flex w-full items-center gap-x-2 border h-10 rounded-md cursor-pointer hover:ring-1 hover:ring-primary px-4 transition">
           <CalendarIcon className="h-4 w-4 opacity-50" />
           <span>
             {selectedDate
@@ -34,13 +34,15 @@ const CalendarInput: React.FC<CalendarInputProps> = ({ value, onChange }) => {
       <PopoverContent className="p-2">
         <Calendar
           mode="single"
-          selected={value}
+          selected={value} // Always show the selected date
           onSelect={(date) => {
-            onChange(date || undefined); // Trigger the date change
+            if (date) {
+              onChange(date); // Trigger the date change
+              setSelectedDate(date);
+            }
             setIsOpen(false); // Close the popover
-            setSelectedDate(date);
           }}
-          disabled={(date) => date > new Date() || date < past30Days}
+          disabled={(date) => date > new Date()} // Disable future and past dates
           initialFocus
         />
       </PopoverContent>

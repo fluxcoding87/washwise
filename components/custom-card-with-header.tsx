@@ -32,6 +32,7 @@ export const CustomCardWithHeader = ({
         </CardTitle>
       </CardHeader>
       <Separator className="bg-gray-300 hidden md:block" />
+
       <CardContent className="p-0">
         <div className="mt-6 px-2 md:p-6">{children}</div>
       </CardContent>

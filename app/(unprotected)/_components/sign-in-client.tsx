@@ -16,8 +16,10 @@ import { Button } from "@/components/ui/button";
 import { loginFormSchema } from "@/types/auth";
 import { useLogin } from "@/hooks/auth/useLogin";
 import Link from "next/link";
+import { useState } from "react";
 
 export const SignInClient = () => {
+  const [error, setIsError] = useState(false);
   const { mutate, isPending } = useLogin();
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
@@ -28,7 +30,14 @@ export const SignInClient = () => {
   });
 
   const onSubmit = (values: z.infer<typeof loginFormSchema>) => {
-    mutate(values);
+    mutate(values, {
+      onError: () => {
+        setIsError(true);
+      },
+      onSuccess: () => {
+        setIsError(false);
+      },
+    });
   };
 
   return (
@@ -37,6 +46,11 @@ export const SignInClient = () => {
         <CardTitle className="text-xl md:text-2xl text-neutral-700 font-bold">
           Sign In to <span className="text-primary font-bold">Washwise</span>
         </CardTitle>
+        {error && (
+          <div className="text-red-600 font-semibold text-sm text-center">
+            Email or Password is incorrect!
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <Form {...form}>

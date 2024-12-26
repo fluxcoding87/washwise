@@ -25,6 +25,9 @@ interface MobileSidebarProps {
 }
 
 export const MobileSidebar = ({ user, isLoading }: MobileSidebarProps) => {
+  const student = user?.role === "student";
+  const hostelOnlyAccess = user?.role === "hostelStaff";
+  const plantAndHostelAccess = user?.role === "plantStaff";
   if (isLoading) {
     return (
       <div className="block md:hidden animate-pulse">
@@ -78,33 +81,76 @@ export const MobileSidebar = ({ user, isLoading }: MobileSidebarProps) => {
               <div className="text-xs text-gray-600 -mt-2">{user.email}</div>
             </div>
           </div>
-
           <DottedSeparator className="mt-2" dotSize="2" gapSize="3" />
           <div className="px-2 py-4 flex flex-col justify-center gap-y-4 text-sm">
-            <MobileSidebarItem title="Home" icon={HomeIcon} href="/" />
-            {user.staff ? (
-              <MobileSidebarItem
-                icon={MdHistory}
-                title="History"
-                href="/history"
-              />
-            ) : (
-              <MobileSidebarItem
-                title="New Order"
-                icon={Package}
-                href="/new-order"
-              />
+            {student && (
+              <>
+                <MobileSidebarItem
+                  icon={HomeIcon}
+                  title="Home"
+                  href="/student"
+                />
+                <MobileSidebarItem
+                  icon={Package}
+                  title="New Order"
+                  href="/student/new-order"
+                />
+                <MobileSidebarItem
+                  icon={MdHistory}
+                  title="History"
+                  href="/student/history"
+                />
+                <MobileSidebarItem
+                  icon={HelpCircle}
+                  title="Raise an Issue"
+                  href="/student/issue"
+                />
+              </>
             )}
-            <MobileSidebarItem
-              title="Pickups"
-              icon={CalendarCheck2}
-              href="/pickups"
-            />
-            <MobileSidebarItem
-              title="Raise an Issue"
-              icon={HelpCircle}
-              href="/issue"
-            />
+            {hostelOnlyAccess && (
+              <>
+                <MobileSidebarItem
+                  icon={HomeIcon}
+                  title="Home"
+                  href="/hostel-staff"
+                />
+                <MobileSidebarItem
+                  icon={CalendarCheck2}
+                  title="Pickups"
+                  href="/hostel-staff/pickups"
+                />
+                <MobileSidebarItem
+                  icon={HelpCircle}
+                  title="Raise an Issue"
+                  href="/hostel-staff/issue"
+                />
+              </>
+            )}
+            {/* TODO PLANT ONLY ACCESS AND ADMIN ACCESS */}
+            {plantAndHostelAccess && (
+              <>
+                <MobileSidebarItem
+                  icon={HomeIcon}
+                  title="Home"
+                  href="/plant-staff"
+                />
+                {/* <MobileSidebarItem
+                       icon={MdHistory}
+                       title="History"
+                       href="/plant-staff/history"
+                     /> */}
+                <MobileSidebarItem
+                  icon={CalendarCheck2}
+                  title="Pickups"
+                  href="/plant-staff/pickups"
+                />
+                <MobileSidebarItem
+                  icon={HelpCircle}
+                  title="Raise an Issue"
+                  href="/plant-staff/issue"
+                />
+              </>
+            )}
             <div
               onClick={() => signOut({ callbackUrl: "/sign-in" })}
               className="flex items-center p-2 gap-x-4 border rounded-md font-semibold transition hover:text-primary"
@@ -113,7 +159,7 @@ export const MobileSidebar = ({ user, isLoading }: MobileSidebarProps) => {
               <span>Logout</span>
             </div>
           </div>
-          <div className="flex items-center justify-center p-10">
+          <div className="flex items-center justify-center pr-16 mt-4">
             {user.hostel ? (
               <div
                 className={cn(

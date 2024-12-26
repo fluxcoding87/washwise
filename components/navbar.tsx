@@ -15,11 +15,7 @@ export const Navbar = ({ user }: { user: FullUser }) => {
         <>
           <NavItem icon={HomeIcon} title="Home" href="/student" />
           <NavItem icon={Package} title="New Order" href="/student/new-order" />
-          <NavItem
-            icon={CalendarCheck2}
-            title="Pickups"
-            href="/student/pickups"
-          />
+          <NavItem icon={MdHistory} title="History" href="/student/history" />
           <NavItem
             icon={HelpCircle}
             title="Raise an Issue"

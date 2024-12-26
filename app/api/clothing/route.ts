@@ -55,7 +55,7 @@ export async function GET(req: Request) {
     }
     const url = new URL(req.url);
     const type = url.searchParams.get("type");
-
+    const queryDate = url.searchParams.get("date");
     if (!type) {
       return new NextResponse("TYPE_NOT_FOUND", { status: 400 });
     }
@@ -93,6 +93,39 @@ export async function GET(req: Request) {
           },
         },
         take: 8,
+      });
+    } else if ((type === "history" || type === "issue") && queryDate) {
+      const date = new Date(queryDate);
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 58, 999);
+
+      laundries = await db.laundry.findMany({
+        where: {
+          userId: user.id,
+          createdAt: {
+            gte: startOfDay,
+            lt: endOfDay,
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          clothes: {
+            select: {
+              id: true,
+              clothingItems: {
+                select: {
+                  clothingItemId: true,
+                  quantity: true,
+                },
+              },
+            },
+          },
+        },
       });
     }
 

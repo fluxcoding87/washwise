@@ -29,7 +29,7 @@ model User{
 
 
   laundries Laundry[]
-
+  issues Issues[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -52,6 +52,8 @@ model Laundry{
 
   hostelId String?
   hostel Hostel? @relation(fields: [hostelId],references: [id],onDelete: Cascade)
+
+  issues Issues[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -147,7 +149,21 @@ model Hostel{
   updatedAt DateTime @updatedAt
 
 }
+model Issues{
+  id String @id @default(uuid())
+  description String
 
+  resolved Boolean @default(false)
+
+  userId String
+  user User @relation(fields: [userId],references: [id],onDelete: Cascade)
+
+  laundryId String @unique
+  laundry Laundry @relation(fields: [laundryId],references: [id],onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
 // If GOOGLE OR GITHUB LOGIN IS REQUIRED
 // model Account{
