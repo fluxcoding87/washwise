@@ -3,7 +3,11 @@
 import { CalendarCheck2, HelpCircle, HomeIcon, Package } from "lucide-react";
 import { NavItem } from "./nav-item";
 import { FullUser } from "@/types/auth";
-import { MdHistory } from "react-icons/md";
+import {
+  MdHistory,
+  MdOutlineReport,
+  MdOutlineReportProblem,
+} from "react-icons/md";
 export const Navbar = ({ user }: { user: FullUser }) => {
   const student = user?.role === "student";
   const hostelOnlyAccess = user?.role === "hostelStaff";
@@ -27,14 +31,14 @@ export const Navbar = ({ user }: { user: FullUser }) => {
         <>
           <NavItem icon={HomeIcon} title="Home" href="/hostel-staff" />
           <NavItem
-            icon={CalendarCheck2}
-            title="Pickups"
-            href="/hostel-staff/pickups"
+            icon={MdOutlineReportProblem}
+            title="Missing Items"
+            href="/hostel-staff/missing"
           />
           <NavItem
             icon={HelpCircle}
-            title="Raise an Issue"
-            href="/hostel-staff/issue"
+            title="Issues"
+            href="/hostel-staff/issues"
           />
         </>
       )}
@@ -48,14 +52,9 @@ export const Navbar = ({ user }: { user: FullUser }) => {
             href="/plant-staff/history"
           /> */}
           <NavItem
-            icon={CalendarCheck2}
-            title="Pickups"
-            href="/plant-staff/pickups"
-          />
-          <NavItem
-            icon={HelpCircle}
-            title="Raise an Issue"
-            href="/plant-staff/issue"
+            icon={MdOutlineReport}
+            title="Missing Items"
+            href="/plant-staff/missing"
           />
         </>
       )}

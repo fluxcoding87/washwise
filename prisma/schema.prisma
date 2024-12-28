@@ -54,7 +54,7 @@ model Laundry{
   hostel Hostel? @relation(fields: [hostelId],references: [id],onDelete: Cascade)
 
   issues Issues[]
-
+  missingItem MissingItem[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -164,7 +164,19 @@ model Issues{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+model MissingItem{
+  id String @id @default(uuid())
+  laundryId String 
+  laundry Laundry @relation(fields: [laundryId],references: [id],onDelete: Cascade)
 
+  clothingItemId String 
+  quantity Int
+
+  status Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 // If GOOGLE OR GITHUB LOGIN IS REQUIRED
 // model Account{
 //   id String @id @default(uuid())

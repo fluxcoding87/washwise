@@ -27,15 +27,13 @@ import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import PlantStaffCalendarInput from "@/app/(protected)/plant-staff/_components/plant-staff-calender-input";
 import Lottie from "lottie-react";
+import CalendarInput from "./date-picker";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   isLoading: boolean;
   handleSelectedDate: (value: Date) => void;
-  handleRoomChange: (value: string) => void;
-  handleSetPage: (value: number) => void;
-  metaData: any;
 }
 
 export function DataTable<TData, TValue>({
@@ -43,9 +41,6 @@ export function DataTable<TData, TValue>({
   data,
   isLoading,
   handleSelectedDate,
-  handleRoomChange,
-  handleSetPage,
-  metaData,
 }: DataTableProps<TData, TValue>) {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
@@ -66,47 +61,22 @@ export function DataTable<TData, TValue>({
       columnFilters,
     },
   });
-  useEffect(() => {
-    if (metaData) {
-      setTotalPages(metaData.totalPages);
-      if (metaData.totalPages === 0) {
-        setTotalPages(undefined);
-      }
-    }
-  }, [metaData]);
-
-  useEffect(() => {
-    handleSetPage(page);
-  }, [page, handleSetPage]);
 
   return (
     <div>
       <div className="flex flex-col md:flex-row md:justify-between items-center py-4 gap-x-6 gap-y-4">
-        <Input
-          placeholder="Search by room number..."
-          // value={(table.getColumn("room_no")?.getFilterValue() as string) ?? ""}
-          // onChange={(event) =>
-          //   table.getColumn("room_no")?.setFilterValue(event.target.value)
-          // }
-          defaultValue=""
-          onKeyUp={(e) => {
-            handleRoomChange(e.currentTarget.value);
-          }}
-          className="w-full h-12"
-        />
-        <PlantStaffCalendarInput
+        <CalendarInput
           value={dateFilter}
           onChange={(date) => {
-            setPage(1);
             handleSelectedDate(date);
             setDateFilter(date);
-            setColumnFilters((prev) => [
-              ...prev.filter((filter) => filter.id !== "createdAt"),
-              {
-                id: "createdAt",
-                value: date ? format(date, "yyyy-MM-dd") : "",
-              },
-            ]);
+            // setColumnFilters((prev) => [
+            //   ...prev.filter((filter) => filter.id !== "createdAt"),
+            //   {
+            //     id: "createdAt",
+            //     value: date ?? "",
+            //   },
+            // ]);
           }}
         />
       </div>
@@ -141,7 +111,7 @@ export function DataTable<TData, TValue>({
                     data-state={row.getIsSelected() && "selected"}
                     className={cn(
                       "bg-[#FFCDD2]",
-                      !!row.getValue("resolved") && "bg-[#C8E6C9]"
+                      !!row.getValue("status") && "bg-[#C8E6C9]"
                     )}
                   >
                     {row.getVisibleCells().map((cell) => (
@@ -179,21 +149,16 @@ export function DataTable<TData, TValue>({
         <Button
           variant="outline"
           size="sm"
-          onClick={() => {
-            setPage((prev) => (prev === 1 ? 1 : (prev -= 1)));
-          }}
-          disabled={page === 1}
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
         >
           Previous
         </Button>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => {
-            // table.nextPage();
-            setPage((prev) => (prev += 1));
-          }}
-          disabled={totalPages === page || !totalPages}
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
         >
           Next
         </Button>

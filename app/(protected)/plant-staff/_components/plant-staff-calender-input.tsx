@@ -11,15 +11,17 @@ import { CalendarIcon } from "lucide-react";
 interface PlantStaffCalendarInputProps {
   value: Date;
   onChange: (date: Date) => void;
+  type?: "home" | "history";
 }
 
 const PlantStaffCalendarInput: React.FC<PlantStaffCalendarInputProps> = ({
   value,
   onChange,
+  type = "home",
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const currentDate = new Date();
-  const startOfTheWeek = startOfDay(subDays(currentDate, 6));
+  const past30Days = startOfDay(subDays(currentDate, 29));
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
@@ -40,7 +42,7 @@ const PlantStaffCalendarInput: React.FC<PlantStaffCalendarInputProps> = ({
             }
             setIsOpen(false); // Close the popover
           }}
-          disabled={(date) => date > new Date()} // Disable future and past dates
+          disabled={(date) => date > new Date() || date < past30Days} // Disable future and past dates
           initialFocus
         />
       </PopoverContent>

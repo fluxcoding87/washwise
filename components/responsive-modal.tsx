@@ -4,12 +4,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "./ui/drawer";
 import { useViewItemDetails } from "@/hooks/placed-orders/use-view-item-details";
+import { useMissingItems } from "@/hooks/plant-staff/use-missing-item-store";
+import { useEffect } from "react";
 
 interface ResponsiveModalProps {
   children: React.ReactNode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   laundryId?: string;
+  type?: "missingItem" | "item";
 }
 
 export const ResponsiveModal = ({
@@ -17,19 +20,31 @@ export const ResponsiveModal = ({
   open,
   onOpenChange,
   laundryId,
+  type = "item",
 }: ResponsiveModalProps) => {
   const isDesktop = useMedia("(min-width: 1024px)", true);
-  const { modals, setIsOpen, close } = useViewItemDetails();
+  const { setIsOpen, modals: itemModals } = useViewItemDetails();
+  const { setIsOpen: setMissingModalOpen, modals } = useMissingItems();
   const handleOpenChange = (open: boolean) => {
-    if (laundryId) {
+    if (laundryId && type === "item") {
       setIsOpen(laundryId, open);
+    } else if (laundryId && type === "missingItem") {
+      setMissingModalOpen(laundryId, open);
     }
   };
   const handleClose = () => {
-    if (laundryId) {
+    if (laundryId && type === "item") {
       setIsOpen(laundryId, false);
+    } else if (laundryId && type === "missingItem") {
+      setMissingModalOpen(laundryId, false);
     }
   };
+  useEffect(() => {
+    return () => {
+      // Cleanup when component unmounts
+      document.body.style.pointerEvents = "auto";
+    };
+  }, [modals]);
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={handleOpenChange}>

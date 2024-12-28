@@ -42,29 +42,90 @@ export async function GET(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const { user } = session;
+    const hostelId = user.hostel_id;
+    let issues;
+    let meta = null;
+    if (user.role === "student") {
+      if (!laundryId && !hostelId) {
+        issues = await db.issues.findMany({
+          where: {
+            userId: user.id,
+          },
+        });
+      } else if (laundryId && !hostelId) {
+        issues = await db.issues.findMany({
+          where: {
+            userId: user.id,
+            laundryId,
+          },
+          select: {
+            id: true,
+          },
+        });
+      }
+    } else if (hostelId && !laundryId && user.role === "hostelStaff") {
+      const createdAt = url.searchParams.get("createdAt");
+      const roomNo = url.searchParams.get("roomNo");
+      const pageStr = url.searchParams.get("page");
+      const page = parseInt(pageStr || "1", 10);
+      const pageSize = 10;
 
-    let issue;
-    if (!laundryId) {
-      issue = await db.issues.findMany({
-        where: {
-          userId: user.id,
+      const reqDate = new Date(createdAt ?? new Date());
+
+      const startOfDay = new Date(reqDate);
+      startOfDay.setHours(0, 0, 0, 0);
+
+      const endOfDay = new Date(reqDate);
+      endOfDay.setHours(23, 59, 58, 999);
+      let whereQuery;
+      whereQuery = {
+        laundry: {
+          hostelId,
         },
-      });
-    } else if (laundryId) {
-      issue = await db.issues.findMany({
-        where: {
-          userId: user.id,
-          laundryId,
+        createdAt: {
+          gte: startOfDay,
+          lt: endOfDay,
         },
+      };
+      if (roomNo) {
+        whereQuery = {
+          laundry: {
+            hostelId,
+            room_no: roomNo,
+          },
+          createdAt: {
+            gte: startOfDay,
+            lt: endOfDay,
+          },
+        };
+      }
+      issues = await db.issues.findMany({
+        where: whereQuery,
         select: {
           id: true,
+          createdAt: true,
+          resolved: true,
+          laundry: {
+            select: {
+              room_no: true,
+            },
+          },
+        },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        orderBy: {
+          createdAt: "desc",
         },
       });
+      const totalItems = await db.issues.count({
+        where: whereQuery,
+      });
+      const totalPages = Math.ceil(totalItems / pageSize);
+      meta = { totalPages };
     }
-
-    return NextResponse.json(issue);
+    return NextResponse.json({ data: issues, meta });
   } catch (e) {
-    console.log("ISSUES_POST", e);
+    console.log("ISSUES_GET", e);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

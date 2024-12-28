@@ -11,6 +11,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import noResultsAnimationData from "@/public/no-results.json";
 
 import {
   Table,
@@ -24,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
+import Lottie from "lottie-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -130,7 +132,14 @@ export function DateDataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  <div className="flex flex-col items-center justify-center h-96">
+                    <Lottie
+                      animationData={noResultsAnimationData}
+                      loop={false}
+                      className="size-60"
+                    />
+                    <h3 className="text-lg font-semibold">No results.</h3>
+                  </div>
                 </TableCell>
               </TableRow>
             )}

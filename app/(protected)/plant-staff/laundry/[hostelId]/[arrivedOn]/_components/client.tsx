@@ -6,7 +6,7 @@ import { CustomCardWithHeader } from "@/components/custom-card-with-header";
 import { useGetAllLaundriesByHostelAndDay } from "@/hooks/organization/use-get-all-laundries-by-hostel-and-day";
 import { format } from "date-fns";
 
-import { BiBasket, BiSolidBox } from "react-icons/bi";
+import { BiBasket } from "react-icons/bi";
 import { DateDataTable } from "./hostel-laundry-date-data-table";
 import { hostelDateColumns } from "./columns";
 import { useEffect, useState } from "react";
@@ -14,10 +14,6 @@ import { useEffect, useState } from "react";
 import { DottedSeparator } from "@/components/dotted-separator";
 import { LaundryWithClothes } from "@/types/clothing";
 
-import { ClothingItemWithQty } from "./clothing-item-with-qty";
-import { TotalQtyBadge } from "./total-qty-badge";
-
-import { useGetClothingItems } from "@/hooks/clothing/clothingItems/use-get-clothing-items";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { ClothingItemsDescription } from "@/app/(protected)/plant-staff/_components/clothing-items-description";
 import { useGetHostels } from "@/hooks/hostel/use-get-hostels";
@@ -70,41 +66,19 @@ export const ArrivedOnPageClient = ({
       if (hostelName) {
         setHostelName(hostelName);
       }
-      const hasConfirmedTime = laundries.reduce((acc, laundry) => {
-        return acc || laundry.plant_confirmed_time !== null;
-      }, false);
-      setIsConfirmed(hasConfirmedTime);
-
       setSearchedLaundries(laundries);
+      if (laundries.length > 0) {
+        const isConfirmedRemaining = laundries.reduce((acc, curr) => {
+          return acc || curr.plant_confirmed_time === null;
+        }, false);
+        if (isConfirmedRemaining) {
+          setIsConfirmed(false);
+        } else {
+          setIsConfirmed(true);
+        }
+      }
     }
   }, [laundries, hostels]);
-
-  // useEffect(() => {
-  //   if (laundries && !isLaundriesLoading) {
-  //     const groupedData: {
-  //       [key: string]: GroupedDataByRoom;
-  //     } = {};
-  //     setIsLoading(true);
-  //     laundries.forEach((laundry) => {
-  //       if (laundry.room_no) {
-  //         const key = `${laundry.room_no}`;
-  //         if (!groupedData[key]) {
-  //           groupedData[key] = {
-  //             room_no: laundry.room_no,
-  //             total_qty: 0,
-  //             laundry_id: laundry.id,
-  //             hostel_confirmed_on: laundry.confirmed_time,
-  //             plant_confirmed_time: laundry.plant_confirmed_time,
-  //           };
-  //         }
-  //         groupedData[key].total_qty += laundry.total_quantity;
-  //       }
-  //     });
-  //     setColumnData(Object.values(groupedData));
-  //     setIsLoading(false);
-  //   }
-  // }, [laundries, isLaundriesLoading]);
-
   useEffect(() => {
     setIsLoading(true);
     const timeout = setTimeout(() => {
@@ -131,17 +105,23 @@ export const ArrivedOnPageClient = ({
     if (!ok) {
       return;
     } else {
-      mutate(
-        { hostelId, arrivedOn },
-        {
-          onSuccess: () => {
-            setIsConfirmed(true);
-            queryClient.invalidateQueries({
-              queryKey: [`laundries_${hostelId}_${arrivedOn}`],
-            });
-          },
-        }
+      const remainingLaundries = laundries?.filter(
+        (item) => !item.plant_confirmed_time
       );
+      const remainingIds = remainingLaundries?.map((item) => item.id);
+      if (remainingIds && remainingIds.length > 0) {
+        mutate(
+          { hostelId, arrivedOn, remainingIds },
+          {
+            onSuccess: () => {
+              setIsConfirmed(true);
+              queryClient.invalidateQueries({
+                queryKey: [`laundries_${hostelId}_${arrivedOn}`],
+              });
+            },
+          }
+        );
+      }
     }
   };
 

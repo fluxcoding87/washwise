@@ -17,7 +17,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useViewItemDetails } from "@/hooks/placed-orders/use-view-item-details";
-import { useGetLaundryById } from "@/hooks/clothing/use-get-laundry-by-id";
 import { useGetClothingItems } from "@/hooks/clothing/clothingItems/use-get-clothing-items";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";

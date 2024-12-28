@@ -67,7 +67,7 @@ export async function GET(req: Request) {
 export async function PATCH(req: Request) {
   try {
     const session = await getSession();
-    const { hostelId, arrivedOn, laundryIds } = await req.json();
+    const { hostelId, arrivedOn, laundryIds, remainingIds } = await req.json();
     if (!session) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
@@ -91,6 +91,9 @@ export async function PATCH(req: Request) {
       laundries = await db.laundry.updateMany({
         where: {
           hostelId,
+          id: {
+            in: remainingIds,
+          },
           confirmed_time: {
             gte: startOfDay,
             lt: endOfDay,

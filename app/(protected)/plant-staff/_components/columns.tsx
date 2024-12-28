@@ -14,7 +14,6 @@ export const columns: ColumnDef<GroupedData>[] = [
   },
   {
     accessorKey: "arrived_on",
-
     enableSorting: true,
     header: "Arrived On",
     cell: ({ row }) => {

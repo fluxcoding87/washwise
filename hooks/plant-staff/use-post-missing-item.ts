@@ -1,24 +1,21 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export const useConfirmPlantTime = () => {
+export const usePostMisingItem = () => {
   const queryClient = useQueryClient();
-
   const mutation = useMutation({
     mutationFn: async ({
-      hostelId,
-      arrivedOn,
-      remainingIds,
+      laundryId,
+      idsWithQty,
     }: {
-      hostelId: string;
-      arrivedOn: string | Date;
-      remainingIds: string[];
+      laundryId: string;
+      idsWithQty: { clothingItemId: string; quantity: number }[];
     }) => {
-      const response = await axios.patch("/api/hostel/laundries", {
-        hostelId,
-        arrivedOn,
-        remainingIds,
+      const response = await axios.post(`/api/plant-staff/missing`, {
+        laundryId,
+        idsWithQty,
       });
       if (!response.data) {
         throw new Error("Something went wrong!");
@@ -26,10 +23,8 @@ export const useConfirmPlantTime = () => {
       return response.data;
     },
     onSuccess: () => {
-      // queryClient.invalidateQueries({
-      //   queryKey: [`laundries_${hostelId}_${confirmed_time}`],
-      // });
-      toast.success("Confirmation Successfull!");
+      toast.success("Missing Items Marked!");
+      queryClient.invalidateQueries({ queryKey: ["missing_items"] });
     },
     onError: () => {
       console.error("Failed");

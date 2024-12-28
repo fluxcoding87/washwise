@@ -1,6 +1,5 @@
 import { CellAction } from "@/components/cell-action";
 import { LaundryWithClothes } from "@/types/clothing";
-import { LaundryByHostelAndDate } from "@/types/org";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
@@ -17,16 +16,16 @@ export const hostelDateColumns: ColumnDef<LaundryWithClothes>[] = [
     ),
   },
   {
-    accessorKey: "createdAt",
-    header: "Order Placed On",
+    accessorKey: "confirmed_time",
+    header: "Hostel Confirmed",
     size: 30,
     minSize: 200,
     maxSize: 300,
     enableResizing: true,
     cell: ({ row }) =>
-      row.original.createdAt && (
+      row.original.confirmed_time && (
         <span className="font-semibold">
-          {format(row.original.createdAt, "dd MMM, hh:mm a")}
+          {format(row.original.confirmed_time, "EEEE, dd MMM")}
         </span>
       ),
   },
@@ -45,7 +44,7 @@ export const hostelDateColumns: ColumnDef<LaundryWithClothes>[] = [
   },
   {
     accessorKey: "plant_confirmed_time",
-    header: "Confirmed",
+    header: "Plant Confirmed",
     size: 30,
     minSize: 200,
     maxSize: 300,

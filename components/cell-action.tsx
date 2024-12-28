@@ -13,6 +13,9 @@ import { useSession } from "next-auth/react";
 import qs from "querystring";
 import { useConfirm } from "@/hooks/use-confirm";
 import { useDeleteLaundry } from "@/hooks/hostel-staff/use-delete-laundry";
+import { MdOutlineReportProblem } from "react-icons/md";
+import { useMissingItems } from "@/hooks/plant-staff/use-missing-item-store";
+import { PlantStaffMissingItemModal } from "./plant-staff-missing-item-modal";
 interface CellActionProps {
   id: string;
   roomNo: string;
@@ -29,6 +32,7 @@ export const CellAction = ({
   laundryId,
 }: CellActionProps) => {
   const { mutate, isPending } = useDeleteLaundry();
+  const { open } = useMissingItems();
   const router = useRouter();
   const querystring = qs.stringify({
     type,
@@ -45,11 +49,12 @@ export const CellAction = ({
       mutate({ laundryId });
     }
   };
-
+  const handleMissing = async () => {};
   return (
     <>
       <DropdownMenu>
-        <ConfirmationDialog />
+        {type === "hostelStaff" && <ConfirmationDialog />}
+        {type === "plantStaff" && <PlantStaffMissingItemModal laundryId={id} />}
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="size-8 p-0">
             <span className="sr-only">Open menu</span>
@@ -75,6 +80,16 @@ export const CellAction = ({
             >
               <Trash className="size-4 mr-2" />
               Delete
+            </DropdownMenuItem>
+          )}
+          {type === "plantStaff" && (
+            <DropdownMenuItem
+              onClick={() => open(id)}
+              disabled={type !== "plantStaff"}
+              className="text-amber-700 hover:text-amber-800 py-3 px-4 hover:bg-neutral-200 transition cursor-pointer"
+            >
+              <MdOutlineReportProblem className="size-4 mr-2" />
+              Mark Missing Items
             </DropdownMenuItem>
           )}
         </DropdownMenuContent>

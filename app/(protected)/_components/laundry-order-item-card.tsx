@@ -76,7 +76,7 @@ export const LaundryOrderItemCard = ({
     <>
       {type === "default" && <OrderItemModal laundry={data} status={status} />}
       <button
-        disabled={!!issue && type === "select" && issue.length === 1}
+        disabled={!!issue?.data && type === "select" && issue.data.length === 1}
         onClick={() => {
           if (type === "default") {
             open(data.id);
@@ -84,7 +84,7 @@ export const LaundryOrderItemCard = ({
             add(data.id);
           }
         }}
-        className="rounded-xl disabled:opacity-60 block w-full relative border border-primary justify-center shadow-lg hover:-translate-y-2 transition cursor-pointer hover:shadow-2xl"
+        className="rounded-xl focus:scale-110 disabled:opacity-60 block w-full relative border border-primary justify-center shadow-lg hover:-translate-y-2 transition cursor-pointer hover:shadow-2xl"
       >
         {type === "select" && laundryId === data.id && (
           <div className="absolute inset-0 z-10 bg-black/40 backdrop-blur-lg rounded-xl border flex items-center justify-center">

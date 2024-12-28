@@ -141,7 +141,7 @@ export function DataTable<TData, TValue>({
                     data-state={row.getIsSelected() && "selected"}
                     className={cn(
                       "bg-[#FFCDD2]",
-                      !!row.getValue("resolved") && "bg-[#C8E6C9]"
+                      !!row.getValue("confirmed_time") && "bg-[#C8E6C9]"
                     )}
                   >
                     {row.getVisibleCells().map((cell) => (

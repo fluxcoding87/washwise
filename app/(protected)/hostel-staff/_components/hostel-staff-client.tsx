@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "./data-table";
 
 import { useGetLaundriesByHostelId } from "@/hooks/clothing/use-get-laundries-by-hostel-id";
 import { HiOutlineRefresh } from "react-icons/hi";

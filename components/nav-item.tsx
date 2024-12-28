@@ -10,16 +10,18 @@ interface NavItemProps {
   title: string;
   href: string;
 }
-
+const roleBasedPaths = ["/student", "/hostel-staff", "/plant-staff", "/admin"];
 export const NavItem = ({ icon: Icon, title, href }: NavItemProps) => {
   const pathname = usePathname();
-
+  const isHomeItem =
+    roleBasedPaths.includes(pathname) && roleBasedPaths.includes(href);
+  const isActive = pathname.startsWith(href) && !roleBasedPaths.includes(href);
   return (
     <Link
       href={href}
       className={cn(
         "flex items-center gap-x-2 font-medium tracking-tight hover:text-primary transition cursor-pointer text-gray-700",
-        pathname === href && "text-primary hover:text-primary"
+        (isHomeItem || isActive) && "text-primary hover:text-primary"
       )}
     >
       <Icon className="size-5" />

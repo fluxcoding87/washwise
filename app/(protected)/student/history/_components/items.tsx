@@ -3,7 +3,6 @@ import { LaundryWithClothes } from "@/types/clothing";
 import { Loader2 } from "lucide-react";
 import noResultsAnimationData from "@/public/no-results.json";
 import Lottie from "lottie-react";
-import { useSelectedOrderStore } from "../../issue/_hooks/use-selected-order-store";
 
 interface ItemsProps {
   laundries: LaundryWithClothes[] | null | undefined;
