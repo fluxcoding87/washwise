@@ -16,8 +16,14 @@ import { useConfirm } from "@/hooks/use-confirm";
 import { useBulkConfirmLaundries } from "@/hooks/hostel-staff/use-bulk-confirm-laundries";
 import { useQueryClient } from "@tanstack/react-query";
 import { Laundry } from "@prisma/client";
+import { useGlobalTime } from "@/hooks/use-global-time";
+import { useSession } from "next-auth/react";
+import { getDay, isAfter, set } from "date-fns";
+import { toast } from "sonner";
 
 export const HostelStaffClient = ({ hostelId }: { hostelId: string }) => {
+  const { currentTime } = useGlobalTime();
+  const [isAllowed, setIsAllowed] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [confirmed, setConfirm] = useState(false);
   const [roomNo, setRoomNo] = useState<string>();
@@ -62,6 +68,18 @@ export const HostelStaffClient = ({ hostelId }: { hostelId: string }) => {
       clearTimeout(timeout);
     };
   }, [roomNo]);
+  useEffect(() => {
+    const limit = set(currentTime, {
+      hours: 19,
+      minutes: 30,
+      seconds: 0,
+      milliseconds: 0,
+    });
+    if (isAfter(currentTime, limit)) {
+      setIsAllowed(false);
+    }
+  }, [currentTime]);
+
   const handleSelectedDate = (value: Date) => {
     setSelectedDate(value);
     setPage(1);
@@ -73,6 +91,10 @@ export const HostelStaffClient = ({ hostelId }: { hostelId: string }) => {
     setPage(value);
   }, []);
   const handleConfirmOrder = async () => {
+    if (!isAllowed) {
+      toast.error("Cannot confirm after 7:30 PM");
+      return;
+    }
     const ok = await confirm();
     if (!ok) {
       return;

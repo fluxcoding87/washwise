@@ -3,7 +3,7 @@
 import { MdOutlineReportProblem } from "react-icons/md";
 import { CustomCardWithHeader } from "../custom-card-with-header";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useGetMissingItems } from "@/hooks/missing-items/use-get-missing-items";
 import { useGetHostels } from "@/hooks/hostel/use-get-hostels";
 import { DataTable } from "@/components/ui/data-table";
@@ -14,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { useGetClothingItems } from "@/hooks/clothing/clothingItems/use-get-clothing-items";
 import { columns } from "./columns";
 
 interface MissingPageClientProps {
@@ -24,15 +23,11 @@ interface MissingPageClientProps {
 export const MissingPageClient = ({ type }: MissingPageClientProps) => {
   const { data: hostels, isLoading: isHostelsLoading } = useGetHostels();
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const { data: clothingItems, isLoading: isClothingItemsLoading } =
-    useGetClothingItems();
-
   const session = useSession();
   const [hostelId, setHostelId] = useState<string | undefined | null>();
   const { data: missingItems, isLoading: isMissingItemsLoading } =
     useGetMissingItems(selectedDate, hostelId);
-  const isLoading =
-    isHostelsLoading || isClothingItemsLoading || isMissingItemsLoading;
+  const isLoading = isHostelsLoading || isMissingItemsLoading;
   if (session.status === "loading") {
     return <div className="w-full h-44 bg-neutral-400 animate-pulse" />;
   }
@@ -41,7 +36,6 @@ export const MissingPageClient = ({ type }: MissingPageClientProps) => {
   };
   return (
     <CustomCardWithHeader title="Missing Items" icon={MdOutlineReportProblem}>
-      {/* <DataTable /> */}
       {type === "plantStaff" && (
         <Select onValueChange={(val) => setHostelId(val)}>
           <SelectTrigger defaultValue={hostelId ?? undefined}>

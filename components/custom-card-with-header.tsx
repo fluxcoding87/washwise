@@ -5,6 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Separator } from "./ui/separator";
 import { LucideIcon } from "lucide-react";
 import { HiOutlineRefresh } from "react-icons/hi";
+import { useGlobalTime } from "@/hooks/use-global-time";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { getDay, set } from "date-fns";
 
 interface CardWithHeaderProps {
   children?: React.ReactNode;

@@ -49,6 +49,8 @@ import { AddItemModal } from "./add-item-modal";
 import { cn } from "@/lib/utils";
 import { useUpdateLaundry } from "@/hooks/placed-orders/use-update-laundry";
 import { useSearchParams } from "next/navigation";
+import { useGlobalTime } from "@/hooks/use-global-time";
+import { isAfter, set } from "date-fns";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -79,6 +81,8 @@ export function OrderDataTable<TData, TValue>({
   plant_confirmed_time,
 }: DataTableProps<TData, TValue>) {
   const searchParams = useSearchParams();
+  const [isAllowed, setIsAllowed] = useState(true);
+  const { currentTime } = useGlobalTime();
 
   const [type, setType] = useState<string>("hostelStaff");
   const [tableData, setTableData] = useState(data);
@@ -131,6 +135,21 @@ export function OrderDataTable<TData, TValue>({
       isEditing: boolean;
     }[]
   >([]);
+
+  useEffect(() => {
+    if (type && type === "hostelStaff") {
+      const limit = set(currentTime, {
+        hours: 19,
+        minutes: 30,
+        seconds: 0,
+        milliseconds: 0,
+      });
+      if (isAfter(currentTime, limit)) {
+        setIsAllowed(false);
+      }
+    }
+  }, [currentTime, type]);
+
   useEffect(() => {
     const type = searchParams.get("type");
     if (type) {
@@ -269,7 +288,11 @@ export function OrderDataTable<TData, TValue>({
   };
 
   const externalSubmit = () => {
-    handleSubmit(onSubmit)();
+    if (!isAllowed) {
+      toast.error("Cannot confirm order after 7:30 PM");
+    } else {
+      handleSubmit(onSubmit)();
+    }
   };
   const onSubmit = async (
     values: z.infer<typeof editClothesClothingItemSchema>

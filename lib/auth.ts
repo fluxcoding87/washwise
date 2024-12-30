@@ -14,6 +14,7 @@ declare module "next-auth" {
       name?: string | null;
       role: string; // Adding the role field to the session
       hostel_id?: string | null;
+      room_no?: string | null;
     };
   }
   interface User {
@@ -21,6 +22,7 @@ declare module "next-auth" {
     role: string | null;
     hostel_id?: string | null;
     org_id?: string | null;
+    room_no?: string | null;
   }
 }
 declare module "next-auth/jwt" {
@@ -29,6 +31,7 @@ declare module "next-auth/jwt" {
     org_id?: string | null;
     role: string | null; // Adding the role field to the JWT token
     hostel_id?: string | null;
+    room_no?: string | null;
   }
 }
 
@@ -87,6 +90,7 @@ export const authOptions: AuthOptions = {
         token.role = user.role;
         token.org_id = user.org_id;
         token.hostel_id = user.hostel_id;
+        token.room_no = user.room_no;
       }
       return token;
     },
@@ -102,6 +106,9 @@ export const authOptions: AuthOptions = {
       }
       if (token.hostel_id) {
         session.user.hostel_id = token.hostel_id;
+      }
+      if (token.room_no) {
+        session.user.room_no = token.room_no;
       }
 
       return session;

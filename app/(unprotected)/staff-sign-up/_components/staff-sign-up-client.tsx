@@ -225,9 +225,12 @@ export const StaffSignUpClient = () => {
                           <SelectValue placeholder="Select a Group" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="multiple">
-                            None of these
-                          </SelectItem>
+                          {role === "plantStaff" && (
+                            <SelectItem value="multiple">
+                              None of these
+                            </SelectItem>
+                          )}
+
                           {groupMap.map((item) => (
                             <SelectItem key={item} value={item}>
                               {item}
