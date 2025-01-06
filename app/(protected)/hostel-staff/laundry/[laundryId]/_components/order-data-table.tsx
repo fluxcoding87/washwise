@@ -99,7 +99,10 @@ export function OrderDataTable<TData, TValue>({
     "Are you sure?",
     "This action cannot be undone. Once you verify it will go for processing"
   );
-  const { mutate, isPending } = useUpdateLaundry(id);
+  const { mutate, isPending } = useUpdateLaundry(
+    id,
+    type === "student" ? "studentEdit" : "default"
+  );
   const [doubleClickedRow, setDoubleClickedRow] = useState<string | null>(null);
   const [modifiedRows, setModifiedRows] = useState<
     { id: string; value: boolean }[]

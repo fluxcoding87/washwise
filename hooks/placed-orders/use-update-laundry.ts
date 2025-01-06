@@ -5,16 +5,27 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
 
-export const useUpdateLaundry = (id: string) => {
+export const useUpdateLaundry = (
+  id: string,
+  type: "default" | "studentEdit" = "default"
+) => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async ({
       clothingItems,
     }: z.infer<typeof editClothesClothingItemSchema>) => {
-      const response = await axios.patch(`/api/laundry/${id}`, {
-        clothingItems,
-      });
+      const response = await axios.patch(
+        `/api/laundry/${id}`,
+        {
+          clothingItems,
+        },
+        {
+          params: {
+            type,
+          },
+        }
+      );
       if (!response.data) {
         throw new Error("Something went wrong!");
       }
@@ -27,7 +38,11 @@ export const useUpdateLaundry = (id: string) => {
         queryKey: ["hostel_laundries", hostelId],
       });
       router.push("/");
-      toast.success("Laundry Order Confirmed!");
+      toast.success(
+        type === "default"
+          ? "Laundry Order Confirmed!"
+          : "Laundry Order Edited!"
+      );
     },
     onError: () => {
       console.error("Failed");

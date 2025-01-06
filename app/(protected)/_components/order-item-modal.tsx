@@ -18,12 +18,16 @@ import {
 } from "@/components/ui/card";
 import { useViewItemDetails } from "@/hooks/placed-orders/use-view-item-details";
 import { useGetClothingItems } from "@/hooks/clothing/clothingItems/use-get-clothing-items";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { CheckCircle2, Edit2Icon, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import StatusIcon from "./status-icon";
 import { useConfirmOrderByStudent } from "@/hooks/placed-orders/use-confirm-order-by-student";
 import { createPortal } from "react-dom";
 import { LaundryWithClothes } from "@/types/clothing";
+import { useRouter } from "next/navigation";
+import { useGlobalTime } from "@/hooks/use-global-time";
+import { useEffect, useState } from "react";
+import { isAfter, set } from "date-fns";
 
 interface OrderItemModalProps {
   laundry: LaundryWithClothes;
@@ -31,9 +35,25 @@ interface OrderItemModalProps {
 }
 
 export const OrderItemModal = ({ laundry, status }: OrderItemModalProps) => {
-  const { open, setIsOpen, close, modals } = useViewItemDetails();
+  const router = useRouter();
+  const [isEditable, setIsEditable] = useState(true);
+  const { setIsOpen, close, modals } = useViewItemDetails();
   const { mutate, isPending } = useConfirmOrderByStudent();
   const { data: clothingItems, isLoading } = useGetClothingItems();
+  const { currentTime } = useGlobalTime();
+
+  useEffect(() => {
+    const reqDate = set(currentTime, {
+      hours: 16,
+      minutes: 0,
+      seconds: 0,
+      milliseconds: 0,
+    });
+
+    if (isAfter(currentTime, reqDate)) {
+      setIsEditable(false);
+    }
+  }, [currentTime]);
 
   if (!laundry || !clothingItems) {
     return null;
@@ -104,7 +124,7 @@ export const OrderItemModal = ({ laundry, status }: OrderItemModalProps) => {
             </TableFooter>
           </Table>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex flex-col justify-center gap-y-4">
           {status !== "awaitingPickup" && (
             <div
               className={cn(
@@ -127,6 +147,17 @@ export const OrderItemModal = ({ laundry, status }: OrderItemModalProps) => {
               <CheckCircle2 className="size-5" />
               Recieve Order
             </Button>
+          )}
+          {status !== "completed" && isEditable && (
+            <button
+              onClick={() =>
+                router.push(`/student/laundry/${laundry.id}?type=student`)
+              }
+              className="flex items-center justify-center rounded-md hover:opacity-75 cursor-pointer gap-x-2 bg-amber-700 text-white w-full h-14 text-lg"
+            >
+              <Edit2Icon className="size-5" />
+              <span className="font-semibold">Edit Your Order</span>
+            </button>
           )}
         </CardFooter>
       </Card>

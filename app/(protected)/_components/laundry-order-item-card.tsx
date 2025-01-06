@@ -2,7 +2,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Laundry } from "@prisma/client";
 import { format } from "date-fns";
-import { CalendarFold, Loader2 } from "lucide-react";
+import { CalendarFold, Edit2Icon, Loader2 } from "lucide-react";
 import {
   JSXElementConstructor,
   ReactElement,

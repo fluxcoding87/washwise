@@ -31,7 +31,11 @@ import { useEffect, useState } from "react";
 import { Hostel } from "@prisma/client";
 import Image from "next/image";
 
-export const SignUpClient = () => {
+export const SignUpClient = ({
+  rooms,
+}: {
+  rooms: { room_no: string | null }[];
+}) => {
   const [organizationId, setOrganizationId] = useState<string | undefined>(
     undefined
   );
@@ -338,7 +342,13 @@ export const SignUpClient = () => {
                               if (!selectedFloor) return;
                               const selectedFloorNumber = +selectedFloor;
                               const displayNumber = selectedFloorNumber + item;
-
+                              const existingItemIndex = rooms.findIndex(
+                                (val) =>
+                                  val.room_no === displayNumber.toString()
+                              );
+                              if (existingItemIndex !== -1) {
+                                return;
+                              }
                               return (
                                 <SelectItem
                                   value={displayNumber.toString()}

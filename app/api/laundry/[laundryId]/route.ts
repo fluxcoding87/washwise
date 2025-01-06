@@ -67,6 +67,8 @@ export async function PATCH(
   try {
     const session = await getSession();
     const { laundryId } = await params;
+    const url = new URL(req.url);
+    const type = url.searchParams.get("type");
 
     if (!laundryId) {
       return new NextResponse("ID_NOT_FOUND", { status: 400 });
@@ -145,7 +147,7 @@ export async function PATCH(
 
         return NextResponse.json(laundry);
       }
-    } else if (user.role === "student") {
+    } else if (user.role === "student" && type === "default") {
       const laundry = await db.laundry.update({
         where: {
           id: laundryId,
@@ -155,6 +157,58 @@ export async function PATCH(
         },
       });
       return NextResponse.json(laundry);
+    } else if (user.role === "student" && type === "studentEdit") {
+      const { clothingItems }: z.infer<typeof editClothesClothingItemSchema> =
+        await req.json();
+      if (!clothingItems) {
+        return new NextResponse("ITEMS_NOT_FOUND", { status: 400 });
+      }
+      const total_quantity = clothingItems.reduce(
+        (acc, curr) => (acc += +curr.quantity),
+        0
+      );
+
+      if (clothingItems.length > 0) {
+        const laundry = await db.$transaction([
+          db.laundry.update({
+            where: { id: laundryId },
+            data: {
+              total_quantity,
+              clothes: {
+                update: {
+                  clothingItems: {
+                    deleteMany: {},
+                  },
+                },
+              },
+            },
+          }),
+          db.laundry.update({
+            where: { id: laundryId },
+            data: {
+              clothes: {
+                update: {
+                  clothingItems: {
+                    create: clothingItems.map((item) => ({
+                      clothingItemId: item.clothingItemId,
+                      quantity: +item.quantity,
+                    })),
+                  },
+                },
+              },
+            },
+          }),
+        ]);
+        return NextResponse.json(laundry[1]);
+      } else if (clothingItems.length === 0) {
+        const laundry = await db.laundry.delete({
+          where: {
+            id: laundryId,
+          },
+        });
+
+        return NextResponse.json(laundry);
+      }
     }
   } catch (e) {
     console.log("LAUNDRY_ID_PATCH", e);
