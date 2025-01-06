@@ -34,7 +34,7 @@ import Image from "next/image";
 export const SignUpClient = ({
   rooms,
 }: {
-  rooms: { room_no: string | null }[];
+  rooms: { room_no: string | null; hostel_id: string | null }[];
 }) => {
   const [organizationId, setOrganizationId] = useState<string | undefined>(
     undefined
@@ -344,7 +344,8 @@ export const SignUpClient = ({
                               const displayNumber = selectedFloorNumber + item;
                               const existingItemIndex = rooms.findIndex(
                                 (val) =>
-                                  val.room_no === displayNumber.toString()
+                                  val.room_no === displayNumber.toString() &&
+                                  val.hostel_id === selectedHostel?.id
                               );
                               if (existingItemIndex !== -1) {
                                 return;

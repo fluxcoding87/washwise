@@ -5,6 +5,7 @@ export const getAllRoomNo = async () => {
     const rooms = await db.user.findMany({
       select: {
         room_no: true,
+        hostel_id: true,
       },
       where: {
         room_no: {
