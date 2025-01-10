@@ -32,7 +32,9 @@ export const NavClient = () => {
         <Navbar user={user} />
         <MobileSidebar user={user} isLoading={isLoading} />
       </nav>
-      <UserButton user={user} isLoading={isLoading} />
+      <div className="hidden md:block">
+        <UserButton user={user} isLoading={isLoading} />
+      </div>
     </>
   );
 };

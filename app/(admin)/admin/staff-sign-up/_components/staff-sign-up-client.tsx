@@ -75,7 +75,7 @@ export const StaffSignUpClient = () => {
   };
 
   return (
-    <Card className="max-w-2xl mx-auto shadow-none border border-primary mt-8">
+    <Card className="shadow-none max-w-3xl mx-auto md:mt-8 mb-4 border border-primary">
       <CardHeader>
         <CardTitle className="text-xl md:text-2xl text-neutral-700 font-bold flex items-center justify-between">
           <span className="text-lg font-medium tracking-tight">
@@ -86,7 +86,7 @@ export const StaffSignUpClient = () => {
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="">
+      <CardContent>
         <div className="p-3 border border-gray-300 rounded-md flex items-center font-bold text-sm tracking-tight text-neutral-700">
           Basic Details
         </div>
@@ -351,12 +351,6 @@ export const StaffSignUpClient = () => {
           </form>
         </Form>
       </CardContent>
-      <div className="w-full text-center my-3">
-        Already have an account?{" "}
-        <Link href="/sign-in" className="text-primary">
-          Sign In
-        </Link>
-      </div>
     </Card>
   );
 };

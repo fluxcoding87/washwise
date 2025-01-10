@@ -15,6 +15,7 @@ export const useRegister = () => {
       password,
       mobile_number,
       room_no,
+      org_id,
       hostel_id,
       floor,
     }: z.infer<typeof signUpFormSchema>) => {
@@ -24,6 +25,7 @@ export const useRegister = () => {
         password,
         mobile_number,
         room_no,
+        org_id,
         hostel_id,
         floor,
       });

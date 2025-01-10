@@ -70,6 +70,7 @@ export const SignUpClient = ({
       mobile_number: "",
       room_no: "",
       hostel_id: "",
+      org_id: "",
       role: "student",
       floor: "",
     },
@@ -181,24 +182,36 @@ export const SignUpClient = ({
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <Select onValueChange={(value) => setOrganizationId(value)}>
-                    <FormLabel className="flex items-center gap-x-1 mb-2">
-                      Organization
-                      <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select an Organization" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {organizations?.map((item) => (
-                        <SelectItem value={item.id} key={item.id}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <FormField
+                  name="org_id"
+                  control={form.control}
+                  render={({ field }) => (
+                    <div>
+                      <Select
+                        onValueChange={(value) => {
+                          setOrganizationId(value);
+                          field.onChange(value);
+                        }}
+                      >
+                        <FormLabel className="flex items-center gap-x-1 mb-2">
+                          Organization
+                          <span className="text-red-500">*</span>
+                        </FormLabel>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an Organization" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {organizations?.map((item) => (
+                            <SelectItem value={item.id} key={item.id}>
+                              {item.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                />
+
                 <FormField
                   name="hostel_id"
                   control={form.control}

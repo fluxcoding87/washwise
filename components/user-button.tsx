@@ -50,7 +50,7 @@ export const UserButton = ({ user, isLoading }: UserButtonProps) => {
   }
   return (
     <Popover>
-      <PopoverTrigger className="hidden md:block">
+      <PopoverTrigger>
         <div className="flex items-center justify-center size-10 rounded-full p-2 relative bg-[#3F51B5]">
           {user.image ? (
             <Image fill src={user.image} alt="user image" />
@@ -135,9 +135,11 @@ export const UserButton = ({ user, isLoading }: UserButtonProps) => {
               {user.staff?.organization.name}
             </div>
             <div className="flex items-center justify-center text-sm font-medium text-muted-foreground">
-              {user.staff?.role === "both"
+              {user.role === "plantStaff"
                 ? "Hostel & Plant Access"
-                : "Hostel Access"}
+                : user.role === "hostelStaff"
+                ? "Hostel Access"
+                : user.role === "admin" && "Admin"}
             </div>
           </div>
         )}

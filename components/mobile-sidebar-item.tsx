@@ -3,6 +3,7 @@ import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IconType } from "react-icons/lib";
+import { roleBasedPaths } from "./nav-item";
 
 interface MobileSidebarItemProps {
   icon: LucideIcon | IconType;
@@ -16,12 +17,15 @@ export const MobileSidebarItem = ({
   href,
 }: MobileSidebarItemProps) => {
   const pathname = usePathname();
+  const isHomeItem =
+    roleBasedPaths.includes(pathname) && roleBasedPaths.includes(href);
+  const isActive = pathname.startsWith(href) && !roleBasedPaths.includes(href);
   return (
     <Link
       href={href}
       className={cn(
         "flex items-center p-2 gap-x-4 border rounded-md font-semibold transition hover:text-primary",
-        pathname === href &&
+        (isHomeItem || isActive) &&
           "text-primary hover:text-primary ring-1 ring-primary"
       )}
     >

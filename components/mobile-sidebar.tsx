@@ -194,9 +194,11 @@ export const MobileSidebar = ({ user, isLoading }: MobileSidebarProps) => {
                     </div>
                     <div className="text-sm font-semibold flex items-center justify-center gap-x-4 px-4 text-muted-foreground">
                       <span>
-                        {user.staff.role === "hostel"
-                          ? "Hostel Access Only"
-                          : "Plant and Hostel Access"}
+                        {user.role === "plantStaff"
+                          ? "Hostel & Plant Access"
+                          : user.role === "hostelStaff"
+                          ? "Hostel Access"
+                          : user.role === "admin" && "Admin"}
                       </span>
                     </div>
                   </div>
@@ -219,9 +221,11 @@ export const MobileSidebar = ({ user, isLoading }: MobileSidebarProps) => {
                   {user.staff?.organization.name}
                 </div>
                 <div className="flex items-center justify-center text-sm font-medium text-muted-foreground">
-                  {user.staff?.role === "both"
+                  {user.role === "plantStaff"
                     ? "Hostel & Plant Access"
-                    : "Hostel Access"}
+                    : user.role === "hostelStaff"
+                    ? "Hostel Access"
+                    : user.role === "admin" && "Admin"}
                 </div>
               </div>
             )}

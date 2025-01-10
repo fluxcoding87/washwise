@@ -10,7 +10,12 @@ interface NavItemProps {
   title: string;
   href: string;
 }
-const roleBasedPaths = ["/student", "/hostel-staff", "/plant-staff", "/admin"];
+export const roleBasedPaths = [
+  "/student",
+  "/hostel-staff",
+  "/plant-staff",
+  "/admin",
+];
 export const NavItem = ({ icon: Icon, title, href }: NavItemProps) => {
   const pathname = usePathname();
   const isHomeItem =

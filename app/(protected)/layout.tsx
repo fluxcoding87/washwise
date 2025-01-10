@@ -1,7 +1,3 @@
-import { MobileSidebar } from "@/components/mobile-sidebar";
-import { Navbar } from "@/components/navbar";
-import { Button } from "@/components/ui/button";
-import { UserButton } from "@/components/user-button";
 import Image from "next/image";
 import Link from "next/link";
 import { NavClient } from "./_components/nav-client";

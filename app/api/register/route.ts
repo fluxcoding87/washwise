@@ -12,7 +12,7 @@ export async function POST(req: Request) {
       mobile_number,
       room_no,
       hostel_id,
-      role,
+      org_id,
       floor,
     }: z.infer<typeof signUpFormSchema> = await req.json();
 
@@ -29,6 +29,7 @@ export async function POST(req: Request) {
         role: "student",
         room_no,
         hostel_id,
+        org_id,
         floor,
       },
     });
