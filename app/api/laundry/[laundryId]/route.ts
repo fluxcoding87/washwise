@@ -90,7 +90,7 @@ export async function PATCH(
       );
       if (clothingItems.length > 0) {
         let updateQuery = {};
-        if (user.role === "hostelStaff") {
+        if (user.role === "hostelStaff" || user.role === "admin") {
           updateQuery = {
             confirmed_time: new Date(),
             total_quantity,
@@ -138,7 +138,10 @@ export async function PATCH(
           }),
         ]);
         return NextResponse.json(laundry[1]);
-      } else if (clothingItems.length === 0 && user.role === "hostelStaff") {
+      } else if (
+        clothingItems.length === 0 &&
+        (user.role === "hostelStaff" || user.role === "admin")
+      ) {
         const laundry = await db.laundry.delete({
           where: {
             id: laundryId,

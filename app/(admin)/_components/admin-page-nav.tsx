@@ -46,7 +46,7 @@ export const AdminPageNav = () => {
         <MobileSidebarItem title="Home" href="/admin" icon={HomeIcon} />
         <MobileSidebarItem
           title="View Laundries"
-          href="/admin/view-laundry"
+          href="/admin/laundries"
           icon={MdHistory}
         />
         <MobileSidebarItem

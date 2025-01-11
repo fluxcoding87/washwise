@@ -42,7 +42,12 @@ export async function GET(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const { user } = session;
-    const hostelId = user.hostel_id;
+    let hostelId;
+    if (user.role !== "admin") {
+      hostelId = user.hostel_id;
+    } else if (user.role === "admin") {
+      hostelId = url.searchParams.get("hostelId");
+    }
     let issues;
     let meta = null;
     if (user.role === "student") {
@@ -63,7 +68,11 @@ export async function GET(req: Request) {
           },
         });
       }
-    } else if (hostelId && !laundryId && user.role === "hostelStaff") {
+    } else if (
+      hostelId &&
+      !laundryId &&
+      (user.role === "hostelStaff" || user.role === "admin")
+    ) {
       const createdAt = url.searchParams.get("createdAt");
       const roomNo = url.searchParams.get("roomNo");
       const pageStr = url.searchParams.get("page");

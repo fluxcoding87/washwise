@@ -102,7 +102,6 @@ model Staff{
   hostel_id String?
   orgId String
   name String
-  role String
   group String?
 
   user User @relation(fields: [userId],references: [id],onDelete: Cascade)

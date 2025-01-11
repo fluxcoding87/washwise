@@ -7,10 +7,11 @@ export type IssueWithRoom = Issues & { laundry: Laundry };
 export function useGetIssuesByHostelId(
   date: Date,
   page: number = 1,
-  roomNo?: string
+  roomNo?: string,
+  hostelId?: string
 ) {
   const query = useQuery({
-    queryKey: ["issues_hostel", date, page, roomNo ?? null],
+    queryKey: ["issues_hostel", date, page, roomNo ?? null, hostelId ?? null],
     queryFn: async () => {
       const response = await axios.get<{
         data: IssueWithRoom[];
@@ -20,6 +21,7 @@ export function useGetIssuesByHostelId(
           createdAt: date.toISOString(),
           page: page ?? 1,
           roomNo,
+          hostelId,
         },
       });
       if (!response.data) {

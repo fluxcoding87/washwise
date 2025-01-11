@@ -21,7 +21,13 @@ import { useSession } from "next-auth/react";
 import { getDay, isAfter, set } from "date-fns";
 import { toast } from "sonner";
 
-export const HostelStaffClient = ({ hostelId }: { hostelId: string }) => {
+export const HostelStaffClient = ({
+  hostelId,
+  type = "default",
+}: {
+  hostelId: string;
+  type?: "default" | "admin";
+}) => {
   const { currentTime } = useGlobalTime();
   const [isAllowed, setIsAllowed] = useState(true);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -69,16 +75,18 @@ export const HostelStaffClient = ({ hostelId }: { hostelId: string }) => {
     };
   }, [roomNo]);
   useEffect(() => {
-    const limit = set(currentTime, {
-      hours: 19,
-      minutes: 30,
-      seconds: 0,
-      milliseconds: 0,
-    });
-    if (isAfter(currentTime, limit)) {
-      setIsAllowed(false);
+    if (type === "default") {
+      const limit = set(currentTime, {
+        hours: 19,
+        minutes: 30,
+        seconds: 0,
+        milliseconds: 0,
+      });
+      if (isAfter(currentTime, limit) && type === "default") {
+        setIsAllowed(false);
+      }
     }
-  }, [currentTime]);
+  }, [currentTime, type]);
 
   const handleSelectedDate = (value: Date) => {
     setSelectedDate(value);
@@ -130,38 +138,80 @@ export const HostelStaffClient = ({ hostelId }: { hostelId: string }) => {
       }
     }
   };
-  return (
-    <CustomCardWithHeader icon={HiOutlineRefresh} title="Recent Placed Orders">
-      <ConfirmationDialog />
-      <DataTable
-        columns={HostelStaffColumns}
-        isLoading={isLoading || isPending}
-        data={laundries ?? []}
-        handleSelectedDate={handleSelectedDate}
-        handleRoomChange={handleRoomChange}
-        handleSetPage={handleSetPage}
-        metaData={data?.meta}
-      />
-      <DottedSeparator
-        dotSize="4"
-        gapSize="8"
-        className="my-4 bg-neutral-600"
-      />
-      <button
-        disabled={isPending || isLoading || confirmed}
-        onClick={handleConfirmOrder}
-        className={cn(
-          "w-full p-4 bg-sky-700 cursor-pointer font-bold text-lg rounded-lg text-white flex items-center justify-center gap-x-4 hover:bg-sky-600 hover:opacity-75 transition",
-          confirmed && "bg-green-600 hover:bg-green-700 hover:opacity-95"
-        )}
+  if (type === "default") {
+    return (
+      <CustomCardWithHeader
+        icon={HiOutlineRefresh}
+        title="Recent Placed Orders"
       >
-        <CheckCircle2 />
-        <span className="text-sm sm:text-base md:text-lg">
-          {confirmed
-            ? "Laundries Approved by Hostel Staff"
-            : "Confirm All Orders"}
-        </span>
-      </button>
-    </CustomCardWithHeader>
-  );
+        <ConfirmationDialog />
+        <DataTable
+          columns={HostelStaffColumns}
+          isLoading={isLoading || isPending}
+          data={laundries ?? []}
+          handleSelectedDate={handleSelectedDate}
+          handleRoomChange={handleRoomChange}
+          handleSetPage={handleSetPage}
+          metaData={data?.meta}
+        />
+        <DottedSeparator
+          dotSize="4"
+          gapSize="8"
+          className="my-4 bg-neutral-600"
+        />
+        <button
+          disabled={isPending || isLoading || confirmed}
+          onClick={handleConfirmOrder}
+          className={cn(
+            "w-full p-4 bg-sky-700 cursor-pointer font-bold text-lg rounded-lg text-white flex items-center justify-center gap-x-4 hover:bg-sky-600 hover:opacity-75 transition",
+            confirmed && "bg-green-600 hover:bg-green-700 hover:opacity-95"
+          )}
+        >
+          <CheckCircle2 />
+          <span className="text-sm sm:text-base md:text-lg">
+            {confirmed
+              ? "Laundries Approved by Hostel Staff"
+              : "Confirm All Orders"}
+          </span>
+        </button>
+      </CustomCardWithHeader>
+    );
+  } else if (type === "admin") {
+    return (
+      <>
+        <ConfirmationDialog />
+        <DataTable
+          columns={HostelStaffColumns}
+          isLoading={isLoading || isPending}
+          data={laundries ?? []}
+          handleSelectedDate={handleSelectedDate}
+          handleRoomChange={handleRoomChange}
+          handleSetPage={handleSetPage}
+          metaData={data?.meta}
+        />
+        <DottedSeparator
+          dotSize="4"
+          gapSize="8"
+          className="my-4 bg-neutral-600"
+        />
+        {laundries && laundries.length > 0 && (
+          <button
+            disabled={isPending || isLoading || confirmed}
+            onClick={handleConfirmOrder}
+            className={cn(
+              "w-full p-4 bg-sky-700 cursor-pointer font-bold text-lg rounded-lg text-white flex items-center justify-center gap-x-4 hover:bg-sky-600 hover:opacity-75 transition",
+              confirmed && "bg-green-600 hover:bg-green-700 hover:opacity-95"
+            )}
+          >
+            <CheckCircle2 />
+            <span className="text-sm sm:text-base md:text-lg">
+              {confirmed
+                ? "Laundries Approved by Hostel Staff"
+                : "Confirm All Orders"}
+            </span>
+          </button>
+        )}
+      </>
+    );
+  }
 };

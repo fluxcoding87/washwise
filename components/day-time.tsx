@@ -6,6 +6,11 @@ import { useEffect, useState } from "react";
 
 export const DayTime = () => {
   // const [currentTime, setCurrentTime] = useState<Date>(new Date());
+  const [isServer, setIsServer] = useState(true);
+  useEffect(() => {
+    setIsServer(false);
+  }, []);
+
   const { currentTime, setTime: setCurrentTime } = useGlobalTime();
   useEffect(() => {
     // Function to update the time
@@ -31,6 +36,10 @@ export const DayTime = () => {
     // Cleanup the timeout when the component unmounts
     return () => clearTimeout(timeoutId);
   }, []);
+  if (isServer) {
+    return null;
+  }
+
   return (
     <div className="flex items-center text-sm md:text-lg md:tracking-tight gap-x-1 md:gap-x-2 font-normal text-sky-700">
       <ClockIcon className="size-4 md:size-5" />

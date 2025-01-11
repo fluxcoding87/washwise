@@ -6,7 +6,7 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useGetMissingItems } from "@/hooks/missing-items/use-get-missing-items";
 import { useGetHostels } from "@/hooks/hostel/use-get-hostels";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable } from "./data-table";
 import {
   Select,
   SelectContent,

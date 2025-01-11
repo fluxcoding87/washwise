@@ -110,7 +110,7 @@ export const UserButton = ({ user, isLoading }: UserButtonProps) => {
                 </div>
                 <div className="text-sm font-semibold flex items-center justify-center gap-x-4 px-4 text-muted-foreground">
                   <span>
-                    {user.staff.role === "hostel"
+                    {user.role === "hostelStaff"
                       ? "Hostel Access Only"
                       : "Plant and Hostel Access"}
                   </span>

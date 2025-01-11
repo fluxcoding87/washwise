@@ -104,7 +104,7 @@ export async function PATCH(req: Request) {
         },
       });
     }
-    if (session.user.role === "hostelStaff") {
+    if (session.user.role === "hostelStaff" || session.user.role === "admin") {
       laundries = await db.laundry.updateMany({
         where: {
           id: {
