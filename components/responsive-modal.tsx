@@ -23,7 +23,7 @@ export const ResponsiveModal = ({
   type = "item",
 }: ResponsiveModalProps) => {
   const isDesktop = useMedia("(min-width: 1024px)", true);
-  const { setIsOpen, modals: itemModals } = useViewItemDetails();
+  const { setIsOpen } = useViewItemDetails();
   const { setIsOpen: setMissingModalOpen, modals } = useMissingItems();
   const handleOpenChange = (open: boolean) => {
     if (laundryId && type === "item") {
@@ -37,6 +37,8 @@ export const ResponsiveModal = ({
       setIsOpen(laundryId, false);
     } else if (laundryId && type === "missingItem") {
       setMissingModalOpen(laundryId, false);
+    } else {
+      onOpenChange(false);
     }
   };
   useEffect(() => {

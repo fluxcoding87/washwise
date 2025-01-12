@@ -16,7 +16,13 @@ import {
 import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { MdEmojiPeople, MdHistory, MdReportProblem } from "react-icons/md";
+import { AiOutlineQuestionCircle } from "react-icons/ai";
+import {
+  MdEmojiPeople,
+  MdHistory,
+  MdOutlineReportProblem,
+  MdReportProblem,
+} from "react-icons/md";
 
 export const AdminPageNav = () => {
   const { data: user, isLoading } = useCurrentUser();
@@ -64,6 +70,11 @@ export const AdminPageNav = () => {
           title="Organization Settings"
           href="/admin/settings"
           icon={Settings2Icon}
+        />
+        <MobileSidebarItem
+          title="Missing Items"
+          href="/admin/missing-items"
+          icon={AiOutlineQuestionCircle}
         />
         <MobileSidebarItem
           title="Add New Staff"

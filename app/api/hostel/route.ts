@@ -12,15 +12,27 @@ export async function GET(req: Request) {
     if (!user.org_id) {
       return new NextResponse("ORG_ID_NOT_FOUND", { status: 400 });
     }
-    const hostels = await db.hostel.findMany({
-      where: {
-        organizationId: user.org_id,
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
+
+    const url = new URL(req.url);
+    const type = url.searchParams.get("type");
+    let hostels;
+    if (type === "default") {
+      hostels = await db.hostel.findMany({
+        where: {
+          organizationId: user.org_id,
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+    } else {
+      hostels = await db.hostel.findMany({
+        where: {
+          organizationId: user.org_id,
+        },
+      });
+    }
 
     return NextResponse.json(hostels);
   } catch (e) {

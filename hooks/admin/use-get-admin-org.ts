@@ -1,27 +1,25 @@
-import { Hostel } from "@prisma/client";
+import { Organization, Staff } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export function useGetHostels(type: "default" | "admin" = "default") {
+export function useGetAdminOrg() {
+  const queryKey = ["admin_org"];
+
   const query = useQuery({
-    queryKey: ["hostels"],
+    queryKey,
     queryFn: async () => {
-      const response = await axios.get<Hostel[]>("/api/hostel", {
-        params: {
-          type,
-        },
-      });
+      const response = await axios.get<Organization>("/api/admin/org");
       if (!response.data) {
         return null;
       }
       const { data } = response;
       return data;
     },
-    staleTime: 2147483647, // Max stale time (~24.8 days)
-    // enabled: !!id,
-    retry: 1,
+    staleTime: 30 * 60 * 1000, // Mark the data as stale immediately
     refetchOnWindowFocus: false, // Disable refetching when the window regains focus
     refetchOnReconnect: false, // Disable refetching when reconnecting to the internet
+    retry: 1,
   });
+
   return query;
 }
