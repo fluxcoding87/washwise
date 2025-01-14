@@ -32,7 +32,6 @@ export async function POST(req: Request) {
         staff: {
           create: {
             name,
-            role,
             group: group || null,
             orgId,
             hostel_id: hostel_id || null,
