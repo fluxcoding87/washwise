@@ -2,7 +2,7 @@ import { loginFormSchema } from "@/types/auth";
 import { useMutation } from "@tanstack/react-query";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { z } from "zod";
 
 export const useLogin = () => {

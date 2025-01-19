@@ -2,7 +2,7 @@ import { editClothesClothingItemSchema } from "@/app/(protected)/hostel-staff/la
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { z } from "zod";
 
 export const useUpdateLaundry = (

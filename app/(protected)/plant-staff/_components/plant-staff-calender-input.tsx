@@ -11,13 +11,13 @@ import { CalendarIcon } from "lucide-react";
 interface PlantStaffCalendarInputProps {
   value: Date;
   onChange: (date: Date) => void;
-  type?: "home" | "history";
+  type?: "default" | "admin";
 }
 
 const PlantStaffCalendarInput: React.FC<PlantStaffCalendarInputProps> = ({
   value,
   onChange,
-  type = "home",
+  type = "default",
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const currentDate = new Date();
@@ -33,18 +33,33 @@ const PlantStaffCalendarInput: React.FC<PlantStaffCalendarInputProps> = ({
         </div>
       </PopoverTrigger>
       <PopoverContent className="p-2">
-        <Calendar
-          mode="single"
-          selected={value} // Always show the selected date
-          onSelect={(date) => {
-            if (date) {
-              onChange(date); // Trigger the date change
-            }
-            setIsOpen(false); // Close the popover
-          }}
-          disabled={(date) => date > new Date() || date < past30Days} // Disable future and past dates
-          initialFocus
-        />
+        {type === "default" ? (
+          <Calendar
+            mode="single"
+            selected={value} // Always show the selected date
+            onSelect={(date) => {
+              if (date) {
+                onChange(date); // Trigger the date change
+              }
+              setIsOpen(false); // Close the popover
+            }}
+            disabled={(date) => date > new Date() || date < past30Days} // Disable future and past dates
+            initialFocus
+          />
+        ) : (
+          <Calendar
+            mode="single"
+            selected={value} // Always show the selected date
+            onSelect={(date) => {
+              if (date) {
+                onChange(date); // Trigger the date change
+              }
+              setIsOpen(false); // Close the popover
+            }}
+            disabled={(date) => date > new Date()} // Disable future and past dates
+            initialFocus
+          />
+        )}
       </PopoverContent>
     </Popover>
   );

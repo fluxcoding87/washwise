@@ -1,3 +1,4 @@
+"use client";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { Laundry } from "@prisma/client";
@@ -19,7 +20,7 @@ import { IconType } from "react-icons/lib";
 import { MdOutlinePendingActions } from "react-icons/md";
 import Lottie from "lottie-react";
 import StatusIcon from "./status-icon";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { useViewItemDetails } from "@/hooks/placed-orders/use-view-item-details";
 import { OrderItemModal } from "./order-item-modal";
 import { LaundryWithClothes } from "@/types/clothing";
@@ -71,12 +72,13 @@ export const LaundryOrderItemCard = ({
     }
     remove();
   }, [data, remove]);
-  // const handleItemCardClick = () => {};
+  console.log(issue);
+
   return (
     <>
       {type === "default" && <OrderItemModal laundry={data} status={status} />}
       <button
-        disabled={!!issue?.data && type === "select" && issue.data.length === 1}
+        disabled={issue?.data && type === "select" && issue?.data.length === 1}
         onClick={() => {
           if (type === "default") {
             open(data.id);

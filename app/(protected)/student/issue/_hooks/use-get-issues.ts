@@ -17,8 +17,7 @@ export function useGetIssues(laundryId?: string) {
       if (!response.data) {
         return null;
       }
-      const { data } = response;
-      return data;
+      return response.data;
     },
     staleTime: 20 * 60 * 1000,
     // enabled: !!id,

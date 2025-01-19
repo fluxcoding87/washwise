@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import ToasterProvider from "@/components/toaster-provider";
 import { QueryProvider } from "@/providers/query-provider";
 import AuthProvider from "@/providers/auth-provider";
 const font = Inter({
@@ -27,7 +28,7 @@ export default function RootLayout({
         <QueryProvider>
           <AuthProvider>
             {children}
-            <Toaster />
+            <ToasterProvider />
           </AuthProvider>
         </QueryProvider>
       </body>

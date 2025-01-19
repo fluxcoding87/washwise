@@ -1,10 +1,12 @@
 "use client";
 
-import { Staff } from "@prisma/client";
+import { Staff, User } from "@prisma/client";
 import { ColumnDef } from "@tanstack/react-table";
 import { CellAction } from "./cell-action";
 
-export const columns: ColumnDef<Staff>[] = [
+export type StaffWithUser = Staff & { user: User };
+
+export const columns: ColumnDef<StaffWithUser>[] = [
   {
     accessorKey: "name",
     header: "Name",
@@ -16,7 +18,7 @@ export const columns: ColumnDef<Staff>[] = [
   {
     id: "id",
     cell: ({ row }) => {
-      return <CellAction itemId={row.original.id} />;
+      return <CellAction data={row.original} />;
     },
   },
 ];

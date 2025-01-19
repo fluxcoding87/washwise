@@ -43,7 +43,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useConfirm } from "@/hooks/use-confirm";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { useAddItem } from "@/hooks/placed-orders/use-add-item";
 import { AddItemModal } from "./add-item-modal";
 import { cn } from "@/lib/utils";

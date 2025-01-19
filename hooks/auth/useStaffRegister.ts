@@ -2,7 +2,7 @@ import { signUpStaffSchema } from "@/types/auth";
 import { useMutation } from "@tanstack/react-query";
 
 import axios from "axios";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 

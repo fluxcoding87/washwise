@@ -147,7 +147,7 @@ export const SignUpClient = ({
                     <FormControl>
                       <Input
                         {...field}
-                        placeholder="Password"
+                        placeholder="minimum 6 characters"
                         type="password"
                       />
                     </FormControl>

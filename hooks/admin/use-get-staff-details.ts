@@ -1,3 +1,4 @@
+import { StaffWithUser } from "@/app/(admin)/admin/staff-details/_components/columns";
 import { Staff } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
@@ -8,7 +9,7 @@ export function useGetStaffDetails(hostelId: string) {
   const query = useQuery({
     queryKey,
     queryFn: async () => {
-      const response = await axios.get<Staff[]>("/api/admin/staff", {
+      const response = await axios.get<StaffWithUser[]>("/api/admin/staff", {
         params: {
           hostelId,
         },

@@ -19,7 +19,7 @@ import { Laundry } from "@prisma/client";
 import { useGlobalTime } from "@/hooks/use-global-time";
 import { useSession } from "next-auth/react";
 import { getDay, isAfter, set } from "date-fns";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 export const HostelStaffClient = ({
   hostelId,
@@ -186,6 +186,7 @@ export const HostelStaffClient = ({
           data={laundries ?? []}
           handleSelectedDate={handleSelectedDate}
           handleRoomChange={handleRoomChange}
+          type="admin"
           handleSetPage={handleSetPage}
           metaData={data?.meta}
         />

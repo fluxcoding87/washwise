@@ -65,7 +65,7 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const { user } = session;
-    if (user.role !== "hostelStaff") {
+    if (user.role !== "hostelStaff" && user.role !== "admin") {
       return new NextResponse("Unauthorized", { status: 401 });
     }
     const { issueId } = await params;

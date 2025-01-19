@@ -36,6 +36,7 @@ interface DataTableProps<TData, TValue> {
   handleRoomChange: (value: string) => void;
   handleSetPage: (value: number) => void;
   metaData: any;
+  type?: "default" | "admin";
 }
 
 export function DataTable<TData, TValue>({
@@ -45,6 +46,7 @@ export function DataTable<TData, TValue>({
   handleSelectedDate,
   handleRoomChange,
   handleSetPage,
+  type = "default",
   metaData,
 }: DataTableProps<TData, TValue>) {
   const [page, setPage] = useState(1);
@@ -96,6 +98,7 @@ export function DataTable<TData, TValue>({
         />
         <PlantStaffCalendarInput
           value={dateFilter}
+          type={type}
           onChange={(date) => {
             setPage(1);
             handleSelectedDate(date);

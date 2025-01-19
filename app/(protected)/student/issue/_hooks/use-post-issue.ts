@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 import { z } from "zod";
 import { issueFormSchema } from "../_components/client";
 
@@ -21,7 +21,7 @@ export const usePostIssue = () => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["issues"] });
+      queryClient.invalidateQueries();
       toast.success("Issue Raised Successfully!");
     },
     onError: () => {

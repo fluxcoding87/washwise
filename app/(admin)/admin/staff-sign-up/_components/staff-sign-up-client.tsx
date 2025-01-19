@@ -31,7 +31,7 @@ import { Hostel } from "@prisma/client";
 import Image from "next/image";
 import { useStaffRegister } from "@/hooks/auth/useStaffRegister";
 
-const groupMap = ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8"];
+export const groupMap = ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8"];
 
 export const StaffSignUpClient = () => {
   const [organizationId, setOrganizationId] = useState<string | undefined>(
