@@ -51,7 +51,14 @@ export const PlantStaffMissingItemModal = ({
       quantity: item.quantity,
     }));
     if (idsWithQty.length > 0) {
-      mutate({ laundryId, idsWithQty });
+      mutate(
+        { laundryId, idsWithQty },
+        {
+          onSuccess: () => {
+            close(laundryId);
+          },
+        }
+      );
     }
   };
 

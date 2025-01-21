@@ -32,13 +32,18 @@ import { isAfter, set } from "date-fns";
 interface OrderItemModalProps {
   laundry: LaundryWithClothes;
   status: string;
+  type: string;
 }
 
-export const OrderItemModal = ({ laundry, status }: OrderItemModalProps) => {
+export const OrderItemModal = ({
+  laundry,
+  status,
+  type,
+}: OrderItemModalProps) => {
   const router = useRouter();
   const [isEditable, setIsEditable] = useState(true);
   const { setIsOpen, close, modals } = useViewItemDetails();
-  const { mutate, isPending } = useConfirmOrderByStudent();
+  const { mutate, isPending } = useConfirmOrderByStudent(type);
   const { data: clothingItems, isLoading } = useGetClothingItems();
   const { currentTime } = useGlobalTime();
 

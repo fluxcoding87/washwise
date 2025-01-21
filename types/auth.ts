@@ -9,7 +9,7 @@ export const loginFormSchema = z.object({
 export const signUpFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email(),
-  password: z.string().min(6, "Password is required"),
+  password: z.string().min(6, "Password is required (min 6 characters)"),
   mobile_number: z.string().optional(),
   room_no: z.string().min(1, "Room Number is Required"),
   hostel_id: z.string().min(1, "Hostel is Required"),

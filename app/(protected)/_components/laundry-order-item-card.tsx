@@ -76,7 +76,9 @@ export const LaundryOrderItemCard = ({
 
   return (
     <>
-      {type === "default" && <OrderItemModal laundry={data} status={status} />}
+      {type === "default" && (
+        <OrderItemModal laundry={data} status={status} type={type} />
+      )}
       <button
         disabled={issue?.data && type === "select" && issue?.data.length === 1}
         onClick={() => {

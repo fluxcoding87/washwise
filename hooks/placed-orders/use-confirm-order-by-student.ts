@@ -2,11 +2,19 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-export const useConfirmOrderByStudent = () => {
+export const useConfirmOrderByStudent = (type: string) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async ({ laundryId }: { laundryId: string }) => {
-      const response = await axios.patch(`/api/laundry/${laundryId}`);
+      const response = await axios.patch(
+        `/api/laundry/${laundryId}`,
+        {},
+        {
+          params: {
+            type,
+          },
+        }
+      );
       if (!response.data) {
         throw new Error("Something went wrong!");
       }

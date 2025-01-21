@@ -213,6 +213,7 @@ export async function PATCH(
         return NextResponse.json(laundry);
       }
     }
+    return new NextResponse("END", { status: 400 });
   } catch (e) {
     console.log("LAUNDRY_ID_PATCH", e);
     return new NextResponse("Internal Error", { status: 500 });

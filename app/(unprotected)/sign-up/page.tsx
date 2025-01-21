@@ -10,7 +10,6 @@ export default async function SignUpPage() {
     redirect("/");
   }
   const rooms = await getAllRoomNo();
-  console.log(rooms);
 
   return <SignUpClient rooms={rooms} />;
 }

@@ -30,6 +30,7 @@ import {
 import { useEffect, useState } from "react";
 import { Hostel } from "@prisma/client";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 export const SignUpClient = ({
   rooms,
@@ -39,6 +40,7 @@ export const SignUpClient = ({
   const [organizationId, setOrganizationId] = useState<string | undefined>(
     undefined
   );
+  const [confirmPassInput, setConfirmPassInput] = useState("");
   const [hostels, setHostels] = useState<Hostel[] | undefined>(undefined);
   const [selectedHostel, setSelectedHostel] = useState<Hostel | undefined>(
     undefined
@@ -48,7 +50,6 @@ export const SignUpClient = ({
   );
   const { mutate, isPending } = useRegister();
   const { data: organizations, isLoading } = useGetOrganizations();
-  // console.log(organizations);
 
   useEffect(() => {
     if (!organizations) return;
@@ -155,6 +156,32 @@ export const SignUpClient = ({
                   </FormItem>
                 )}
               />
+              <div className="px-2 py-2 space-y-1">
+                <FormLabel>Confirm Password</FormLabel>
+                <Input
+                  placeholder="confirm password"
+                  type="password"
+                  value={confirmPassInput}
+                  disabled={form.getValues("password").length <= 0}
+                  onChange={(e) => {
+                    setConfirmPassInput(e.target.value);
+                  }}
+                />
+                <span
+                  className={cn(
+                    "text-xs font-semibold",
+                    form.getValues("password").length > 0 &&
+                      confirmPassInput === form.getValues("password")
+                      ? "text-green-600"
+                      : "text-red-500"
+                  )}
+                >
+                  {form.getValues("password").length > 0 &&
+                  confirmPassInput === form.getValues("password")
+                    ? "Passwords Match"
+                    : "Password don't match"}
+                </span>
+              </div>
               <FormField
                 control={form.control}
                 name="mobile_number"
@@ -382,7 +409,12 @@ export const SignUpClient = ({
                 />
               </div>
             )}
-            <Button className="font-semibold" disabled={isPending}>
+            <Button
+              className="font-semibold"
+              disabled={
+                isPending || form.getValues("password") !== confirmPassInput
+              }
+            >
               Sign Up
             </Button>
           </form>
