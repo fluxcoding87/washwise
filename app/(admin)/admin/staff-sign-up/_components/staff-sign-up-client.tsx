@@ -30,6 +30,7 @@ import { useEffect, useState } from "react";
 import { Hostel } from "@prisma/client";
 import Image from "next/image";
 import { useStaffRegister } from "@/hooks/auth/useStaffRegister";
+import { cn } from "@/lib/utils";
 
 export const groupMap = ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8"];
 
@@ -37,6 +38,7 @@ export const StaffSignUpClient = () => {
   const [organizationId, setOrganizationId] = useState<string | undefined>(
     undefined
   );
+  const [confirmPassInput, setConfirmPassInput] = useState("");
   const [hostels, setHostels] = useState<Hostel[] | undefined>(undefined);
   const [selectedHostel, setSelectedHostel] = useState<string | undefined>(
     undefined
@@ -149,6 +151,32 @@ export const StaffSignUpClient = () => {
                   </FormItem>
                 )}
               />
+              <div className="px-2 py-2 space-y-1">
+                <FormLabel>Confirm Password</FormLabel>
+                <Input
+                  placeholder="confirm password"
+                  type="password"
+                  value={confirmPassInput}
+                  disabled={form.getValues("password").length <= 0}
+                  onChange={(e) => {
+                    setConfirmPassInput(e.target.value);
+                  }}
+                />
+                <span
+                  className={cn(
+                    "text-xs font-semibold",
+                    form.getValues("password").length > 0 &&
+                      confirmPassInput === form.getValues("password")
+                      ? "text-green-600"
+                      : "text-red-500"
+                  )}
+                >
+                  {form.getValues("password").length > 0 &&
+                  confirmPassInput === form.getValues("password")
+                    ? "Passwords Match"
+                    : "Password don't match"}
+                </span>
+              </div>
               <FormField
                 control={form.control}
                 name="mobile_number"
@@ -343,7 +371,8 @@ export const StaffSignUpClient = () => {
               className="font-semibold"
               disabled={
                 isPending ||
-                (role === "hostelStaff" && (!selectedHostel || !group))
+                (role === "hostelStaff" && (!selectedHostel || !group)) ||
+                form.getValues("password") !== confirmPassInput
               }
             >
               Sign Up
