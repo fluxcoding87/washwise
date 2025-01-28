@@ -16,7 +16,7 @@ export const MobileSideBar = () => {
       <SheetHeader className="sr-only">
         <SheetTitle className="sr-only">View</SheetTitle>
       </SheetHeader>
-      <SheetContent side="left" className="p-0">
+      <SheetContent side="left" className="p-0 overflow-y-scroll">
         <AdminPageNav />
       </SheetContent>
     </Sheet>

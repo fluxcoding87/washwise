@@ -28,7 +28,7 @@ export const AdminPageNav = () => {
   const { data: user, isLoading } = useCurrentUser();
 
   return (
-    <>
+    <div>
       <div className="bg-neutral-200/70 flex-col flex">
         <div className="w-full">
           <Link
@@ -115,6 +115,6 @@ export const AdminPageNav = () => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
