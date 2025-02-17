@@ -1,20 +1,26 @@
-pipeine {
-  agent jenkins_slave
+pipeline{
+  agent any
+
   stages {
-    stage ("build"){
+
+    stage("build"){
       steps{
-        echo "Building washwise"
+        echo 'building the application'
       }
     }
-    stage ("test"){
+
+    stage("test"){
       steps{
-        echo "Testing Washwise"
+        echo "Testing the application"
       }
     }
+
     stage("deploy"){
       steps{
-        echo "deploying washwise"
+        echo "Deploying the application"
       }
     }
+
   }
+
 }
