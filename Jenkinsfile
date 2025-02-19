@@ -1,6 +1,6 @@
 
 pipeline {
-    agent any
+    agent {label 'jenkins-slave'}
 
     environment {
         // Replace with the name of your SonarQube server configured in Jenkins
