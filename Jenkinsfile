@@ -38,7 +38,7 @@ pipeline {
                                 -Dsonar.projectKey=washwise \
                                 -Dsonar.sources=. \
                                 -Dsonar.exclusions=node_modules/**,dist/** \
-                                -Dsonar.host.url=http://sonarqube:9000/ \   // Use SonarQube container name
+                                -Dsonar.host.url=http://sonarqube:9000/ \
                                 -Dsonar.login=sqp_5eeed220246dc379a8b62532ec8e5f9792124947
                             """
                         }
