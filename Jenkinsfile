@@ -1,8 +1,8 @@
 pipeline {
-    agent {label 'jenkins-slave'}
+    agent { label 'jenkins-slave' }
 
     environment {
-        // Replace with the name of your SonarQube server configured in Jenkins
+        // SonarQube server configured in Jenkins
         SONARQUBE_SERVER = 'Sonar-Server'
         DATABASE_URL = credentials('DATABASE_URL')
         DATABASE_URL_UNPOOLED = credentials('DATABASE_URL_UNPOOLED')
@@ -29,19 +29,16 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    // Run the SonarScanner within the Docker container where it is installed
-                    docker.image('sonarqube').inside {
-                        withSonarQubeEnv(SONARQUBE_SERVER) {
-                            // Running SonarScanner
-                            sh """
-                                sonar-scanner \
-                                -Dsonar.projectKey=washwise \
-                                -Dsonar.sources=. \
-                                -Dsonar.exclusions=node_modules/**,dist/** \
-                                -Dsonar.host.url=http://sonarqube:9000/ \
-                                -Dsonar.login=sqp_5eeed220246dc379a8b62532ec8e5f9792124947
-                            """
-                        }
+                    withSonarQubeEnv(SONARQUBE_SERVER) {
+                        // Run SonarScanner with the ngrok URL for SonarQube
+                        sh """
+                            sonar-scanner \
+                            -Dsonar.projectKey=washwise \
+                            -Dsonar.sources=. \
+                            -Dsonar.exclusions=node_modules/**,dist/** \
+                            -Dsonar.host.url=http://<your-ngrok-url>:9000/ \
+                            -Dsonar.login=sqp_5eeed220246dc379a8b62532ec8e5f9792124947
+                        """
                     }
                 }
             }
