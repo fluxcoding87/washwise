@@ -5,9 +5,9 @@ pipeline {
     environment {
         // Replace with the name of your SonarQube server configured in Jenkins
         SONARQUBE_SERVER = 'Sonar-Server'
-        DATABASE_URL = 'DATABASE_URL'
-        DATABASE_URL_UNPOOLED = 'DATABASE_URL_UNPOOLED'
-        NEXTAUTH_SECRET = 'NEXTAUTH_SECRET'
+        DATABASE_URL = credentials('DATABASE_URL')
+        DATABASE_URL_UNPOOLED = credentials('DATABASE_URL_UNPOOLED')
+        NEXTAUTH_SECRET = credentials('NEXTAUTH_SECRET')
     }
 
     stages {
