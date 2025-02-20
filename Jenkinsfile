@@ -1,4 +1,3 @@
-
 pipeline {
     agent {label 'jenkins-slave'}
 
@@ -29,17 +28,21 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                // SonarQube analysis step using SonarScanner
-                withSonarQubeEnv(SONARQUBE_SERVER) {
-                    // Running SonarScanner
-                    sh """
-                        sonar-scanner \
-                        -Dsonar.projectKey=washwise \
-                        -Dsonar.sources=. \
-                        -Dsonar.exclusions=node_modules/**,dist/** \
-                        -Dsonar.host.url=http://localhost:9000/ \
-                        -Dsonar.login=sqp_5eeed220246dc379a8b62532ec8e5f9792124947
-                    """
+                script {
+                    // Run the SonarScanner within the Docker container where it is installed
+                    docker.image('sonarqube').inside {
+                        withSonarQubeEnv(SONARQUBE_SERVER) {
+                            // Running SonarScanner
+                            sh """
+                                sonar-scanner \
+                                -Dsonar.projectKey=washwise \
+                                -Dsonar.sources=. \
+                                -Dsonar.exclusions=node_modules/**,dist/** \
+                                -Dsonar.host.url=http://sonarqube:9000/ \   // Use SonarQube container name
+                                -Dsonar.login=sqp_5eeed220246dc379a8b62532ec8e5f9792124947
+                            """
+                        }
+                    }
                 }
             }
         }
