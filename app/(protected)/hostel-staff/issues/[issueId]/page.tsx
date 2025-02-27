@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import { IssueIdPageClient } from "./_components/client";
+export const dynamic = "force-dynamic";
 
 export default async function IssueIdPage({
   params,

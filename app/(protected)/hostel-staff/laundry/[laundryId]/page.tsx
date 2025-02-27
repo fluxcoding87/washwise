@@ -1,4 +1,5 @@
 import { LaundryIdPageClient } from "./_components/laundry-id-page-client";
+export const dynamic = "force-dynamic";
 
 interface LaundryIdPageProps {
   params: { laundryId: string };

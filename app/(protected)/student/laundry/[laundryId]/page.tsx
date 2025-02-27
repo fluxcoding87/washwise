@@ -1,4 +1,5 @@
 import { LaundryIdPageClient } from "@/app/(protected)/hostel-staff/laundry/[laundryId]/_components/laundry-id-page-client";
+export const dynamic = "force-dynamic";
 
 export default async function StudentLaundryIdPage({
   params,
