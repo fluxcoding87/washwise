@@ -17,15 +17,22 @@ import { useGetHostels } from "@/hooks/hostel/use-get-hostels";
 import { useEffect, useState } from "react";
 
 export const AdminLaundryPageClient = () => {
+  const [isServer, setIsServer] = useState(true);
   const { data: hostels, isLoading: isHostelsLoading } = useGetHostels();
   const [hostelId, setHostelId] = useState<string | undefined>(
     hostels && hostels.length > 0 ? hostels[0].id : undefined
   );
   useEffect(() => {
+    setIsServer(false);
+  }, []);
+  useEffect(() => {
     if (hostels && hostels.length > 0 && !isHostelsLoading) {
       setHostelId(hostels[0].id);
     }
   }, [hostels, isHostelsLoading]);
+  if (isServer) {
+    return null;
+  }
   return (
     <CustomCardWithHeader title="View Laundries">
       {hostels && hostels.length > 0 && hostelId && (
