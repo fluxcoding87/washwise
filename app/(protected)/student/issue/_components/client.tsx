@@ -38,10 +38,12 @@ export const issueFormSchema = z.object({
 });
 
 export const IssuePageClient = () => {
+  const [isServer, setIsServer] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const { laundryId, remove } = useSelectedOrderStore();
   const { data, isLoading } = useGetLaundries("history", selectedDate);
   const { mutate, isPending } = usePostIssue();
+
   const handleSelectedDate = (date: Date) => {
     setSelectedDate(date);
   };
@@ -53,11 +55,19 @@ export const IssuePageClient = () => {
       laundryId,
     },
   });
+
+  useEffect(() => {
+    setIsServer(false);
+  }, []);
+
   useEffect(() => {
     if (laundryId) {
       form.setValue("laundryId", laundryId);
     }
   }, [laundryId, form]);
+  if (isServer) {
+    return null;
+  }
 
   const onSubmit = (values: z.infer<typeof issueFormSchema>) => {
     mutate(values, {
