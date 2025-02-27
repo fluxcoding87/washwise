@@ -1,3 +1,5 @@
+def gv
+
 pipeline{
     agent any
     environment {
@@ -12,6 +14,13 @@ pipeline{
         choice(name:"VERSION", choices:["1.0.0","1.1.0","1.2.0"], description:"Specify the version of the app you want to build")
     }
     stages{
+        stage ("init"){
+            steps{
+                script{
+                    gv = load "script.groovy"
+                }
+            }
+        }
         stage ("pre-build"){
             steps{
                 echo "Installing Dependencies"
@@ -36,7 +45,9 @@ pipeline{
         }
         stage ("deployment"){
             steps{
-                echo "Deploying...."
+                script {
+                    gv.deployApp()
+                }
             }
         }
     }
