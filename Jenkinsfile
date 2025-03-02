@@ -23,21 +23,21 @@ pipeline {
             """
             }
         }
-        stage('sonarqube analysis'){
-            steps{
-                script{
-                    withSonarQubeEnv('Sonar-Server'){
-                        sh """
-                        sonar-scanner \
-                        -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=${SONAR_HOST_URL} \
-                        -Dsonar.login=${SONARQUBE_TOKEN}
-                        """
-                    }
-                }
-            }
-        }
+        // stage('sonarqube analysis'){
+        //     steps{
+        //         script{
+        //             withSonarQubeEnv('Sonar-Server'){
+        //                 sh """
+        //                 sonar-scanner \
+        //                 -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} \
+        //                 -Dsonar.sources=. \
+        //                 -Dsonar.host.url=${SONAR_HOST_URL} \
+        //                 -Dsonar.login=${SONARQUBE_TOKEN}
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
         stage ('push image to docker registry'){
             steps{
                 sh """
