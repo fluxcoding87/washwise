@@ -15,11 +15,13 @@ pipeline {
     }
     stages{
         stage('build'){
+            steps{
             //build docker image
             sh """
             docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .
             docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${DOCKER_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
             """
+            }
         }
         stage('sonarqube analysis'){
             steps{
@@ -45,6 +47,7 @@ pipeline {
             }
         }
         stage ('deploy on aws ec2'){
+            steps{
             script {
                     // SSH into the EC2 instance and pull the Docker image
                     sshagent([SSH_CREDENTIALS_ID]) {
@@ -58,6 +61,7 @@ pipeline {
                         """
                     }
                 }
+        }
         }
     }
     post {
