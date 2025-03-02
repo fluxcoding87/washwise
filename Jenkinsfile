@@ -1,54 +1,75 @@
-def gv
-
-pipeline{
-    agent any
+pipeline {
+    agent { label 'ec2-node' }
     environment {
-        DATABASE_URL= credentials("DATABASE_URL")
-        DATABASE_URL_UNPOOLED = credentials("DATABASE_URL_UNPOOLED")
-        NEXTAUTH_SECRET='NEXTAUTH_SECRET'
-    }
-    tools{
-        nodejs 'node-latest'
-    }
-    parameters{
-        choice(name:"VERSION", choices:["1.0.0","1.1.0","1.2.0"], description:"Specify the version of the app you want to build")
+        // Docker image name
+        IMAGE_NAME='washwise-backend'
+        // AWS EC2 Instance Details
+        EC2_USER='ubuntu'
+        EC2_HOST='13.201.61.153'
+        EC2_SSH_KEY= credentials('EC2-SSH-KEY')
+        // DOCKER REPO URL
+        DOCKER_REGISTRY='fluxcoding87'
+        SONARQUBE_PROJECT_KEY='washwise'
+        SONAR_HOST_URL='http://sonarqube:9000'
+        SONARQUBE_TOKEN= credentials('Sonar-Token')
     }
     stages{
-        stage ("init"){
+        stage('build'){
+            //build docker image
+            sh """
+            docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .
+            docker tag ${IMAGE_NAME}:${BUILD_NUMBER} ${DOCKER_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
+            """
+        }
+        stage('sonarqube analysis'){
             steps{
                 script{
-                    gv = load "script.groovy"
+                    withSonarQubeEnv('Sonar-Server'){
+                        sh """
+                        sonar-scanner \
+                        -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=${SONAR_HOST_URL} \
+                        -Dsonar.login=${SONARQUBE_TOKEN}
+                        """
+                    }
                 }
             }
         }
-        stage ("pre-build"){
+        stage ('push image to docker registry'){
             steps{
-                echo "Installing Dependencies"
-                sh "npm install"
+                sh """
+                docker login
+                docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
+                """
             }
         }
-        stage ("build"){
-            steps{
-                echo "Running build command"
-                sh "npm run build"
-            }
-        }
-        stage ("test"){
-            when{
-                expression{
-                    BRANCH_NAME == 'dev'
+        stage ('deploy on aws ec2'){
+            script {
+                    // SSH into the EC2 instance and pull the Docker image
+                    sshagent([SSH_CREDENTIALS_ID]) {
+                        sh """
+                        ssh -o StrictHostKeyChecking=no -i ${EC2_SSH_KEY} ${EC2_USER}@${EC2_HOST} << EOF
+                            docker pull ${DOCKER_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
+                            docker stop washwise || true
+                            docker rm washwise || true
+                            docker run -d --name washwise -p 80:3000 ${DOCKER_REGISTRY}/${IMAGE_NAME}:${BUILD_NUMBER}
+                        EOF
+                        """
+                    }
                 }
-            }
-            steps{
-                echo "testing....."
-            }
         }
-        stage ("deployment"){
-            steps{
-                script {
-                    gv.deployApp()
-                }
-            }
+    }
+    post {
+        always {
+            // Clean up Docker images on Jenkins agent after build
+            sh "docker rmi ${IMAGE_NAME}:${BUILD_NUMBER} || true"
+        }
+        success {
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Build or deployment failed.'
         }
     }
 }
