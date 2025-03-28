@@ -19,11 +19,11 @@ export default async function LoginLayoutPage({
             Washwise
           </h2>
         </Link>
-        <nav className="flex items-center gap-x-4">
+        {/* <nav className="flex items-center gap-x-4">
           <Button className="font-semibold bg-[#007DFC]" asChild>
             <Link href={"/staff-sign-up"}>Request Staff Sign Up</Link>
           </Button>
-        </nav>
+        </nav> */}
       </header>
       <main className="p-4 h-full">{children}</main>
     </section>
